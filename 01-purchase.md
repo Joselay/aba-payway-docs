@@ -48,13 +48,15 @@ POST /api/payment-gateway/v1/payments/purchase
 
 Concatenate all parameter values then HMAC-SHA512 with API key and Base64-encode.
 
-> **Note:** The official docs do not provide the explicit `$b4hash` concatenation order for Purchase (unlike Check Transaction). The table order above is the documentation layout, **not** the hash field order. The actual hash order verified against the sandbox is:
+> **Note:** The hash field order differs from the parameter table order above. The explicit concatenation order from the remote docs is:
 >
-> `req_time, merchant_id, tran_id, amount, items, shipping, firstname, lastname, email, phone, type, payment_option, return_url, cancel_url, continue_success_url, return_deeplink, currency, custom_fields, return_params, view_type, payment_gate, payout, lifetime, additional_params, google_pay_token, skip_success_page`
+> `req_time, merchant_id, tran_id, amount, items, shipping, firstname, lastname, email, phone, type, payment_option, return_url, cancel_url, continue_success_url, return_deeplink, currency, custom_fields, return_params, payout, lifetime, additional_params, google_pay_token, skip_success_page`
+>
+> Note: `view_type` and `payment_gate` are **not** included in the hash.
 
 ```php
 $api_key = "API KEY PROVIDED BY ABA BANK";
-$b4hash = $req_time . $merchant_id . $tran_id . $amount . $items . $shipping . $firstname . $lastname . $email . $phone . $type . $payment_option . $return_url . $cancel_url . $continue_success_url . $return_deeplink . $currency . $custom_fields . $return_params . $view_type . $payment_gate . $payout . $lifetime . $additional_params . $google_pay_token . $skip_success_page;
+$b4hash = $req_time . $merchant_id . $tran_id . $amount . $items . $shipping . $firstname . $lastname . $email . $phone . $type . $payment_option . $return_url . $cancel_url . $continue_success_url . $return_deeplink . $currency . $custom_fields . $return_params . $payout . $lifetime . $additional_params . $google_pay_token . $skip_success_page;
 $hash = base64_encode(hash_hmac('sha512', $b4hash, $api_key, true));
 ```
 
