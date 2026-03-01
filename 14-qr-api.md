@@ -43,6 +43,74 @@ POST /api/payment-gateway/v1/payments/generate-qr
 | `return_params` | string | — | No | Additional info included in pushback on payment completion |
 | `payout` | string | 255 | No | Base64-encoded JSON payout instructions |
 
+> **Note:** Alipay & WeChat do not support pre-auth.
+
+## Hash Generation
+
+Concatenate all parameter values then HMAC-SHA512 with API key and Base64-encode.
+
+> **Note:** The hash field order differs from the parameter table order above. The explicit concatenation order from the remote docs is:
+>
+> `req_time, merchant_id, tran_id, amount, items, first_name, last_name, email, phone, purchase_type, payment_option, callback_url, return_deeplink, currency, custom_fields, return_params, payout, lifetime, qr_image_template`
+
+```php
+$api_key = "API KEY PROVIDED BY ABA BANK";
+$b4hash = $req_time . $merchant_id . $tran_id . $amount . $items . $first_name . $last_name . $email . $phone . $purchase_type . $payment_option . $callback_url . $return_deeplink . $currency . $custom_fields . $return_params . $payout . $lifetime . $qr_image_template;
+$hash = base64_encode(hash_hmac('sha512', $b4hash, $api_key, true));
+```
+
+## Field Format Examples
+
+**items** (Base64-encoded JSON):
+```json
+[
+  {"name": "Item 1", "quantity": "1", "price": "0.01"},
+  {"name": "Item 2", "quantity": "1", "price": "0.02"}
+]
+```
+
+**payout** (Base64-encoded JSON):
+```json
+[
+  {"account": "003811397", "amount": "1.00", "tran_id": "payout_trx_001"}
+]
+```
+
+**return_deeplink** (Base64-encoded JSON):
+```json
+{"android": "payway://pay", "ios": "payway://pay"}
+```
+
+**custom_fields** (Base64-encoded JSON):
+```json
+{"key1": "value1", "key2": "value2"}
+```
+
+**callback_url** (Base64-encoded): The URL that receives payment notifications.
+
+**return_params**: Additional info included in pushback on payment completion (plain string, not Base64-encoded).
+
+## Request Example
+
+```json
+{
+  "hash": "base64-encoded-hmac-sha512-hash",
+  "req_time": "20250301120000",
+  "merchant_id": "your_merchant_id",
+  "tran_id": "trx-20250301-001",
+  "amount": 1.00,
+  "currency": "USD",
+  "payment_option": "abapay_khqr",
+  "lifetime": 30,
+  "qr_image_template": "qr_template1",
+  "first_name": "John",
+  "last_name": "Doe",
+  "email": "john@example.com",
+  "phone": "012345678",
+  "items": "base64-encoded-items-json"
+}
+```
+
 ## Response
 
 **HTTP 200**
@@ -61,6 +129,23 @@ POST /api/payment-gateway/v1/payments/generate-qr
 | `play_store` | string | Play Store download link |
 
 > **Note**: For bandwidth-constrained environments, use `qrString` to generate QR codes locally instead of using `qrImage`.
+
+```json
+{
+  "status": {
+    "code": "0",
+    "message": "Success",
+    "trace_id": "abc-123-def"
+  },
+  "amount": 1.00,
+  "currency": "USD",
+  "qrString": "00020101021229...",
+  "qrImage": "data:image/png;base64,...",
+  "abapay_deeplink": "abamobilebank://ababank.com?type=payway&qrcode=...",
+  "app_store": "https://apps.apple.com/kh/app/aba-mobile/id...",
+  "play_store": "https://play.google.com/store/apps/details?id=..."
+}
+```
 
 ## Callback Notification (POST to `callback_url`)
 
