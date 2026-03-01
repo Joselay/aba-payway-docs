@@ -1,0 +1,104 @@
+# Create Payment Link API
+
+Creates a shareable payment link for collecting payments.
+
+## Endpoint
+
+```
+POST /api/merchant-portal/merchant-access/payment-link/create
+```
+
+**Base URL**: `https://checkout-sandbox.payway.com.kh/` (sandbox) | `https://checkout.payway.com.kh/` (production)
+
+**Content-Type**: `multipart/form-data`
+
+## Request Parameters
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `request_time` | string | Yes | Request date and time in UTC format as `YYYYMMDDHHmmss` |
+| `merchant_id` | string | Yes | Unique merchant key from ABA Bank |
+| `merchant_auth` | string | Yes | RSA-encrypted, Base64-encoded JSON object (see below) |
+| `image` | binary | No | Image for the payment link. Max 3MB. Formats: JPG, JPEG, PNG |
+| `hash` | string | Yes | Base64-encoded HMAC-SHA512 hash of `request_time` + `merchant_id` + `merchant_auth` |
+
+### `merchant_auth` Object (before encryption)
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `mc_id` | string | Yes | Same as `merchant_id` |
+| `title` | string | Yes | Payment link title (max 250 chars) |
+| `amount` | number | Yes | Min 100 KHR or 0.01 USD, cannot be null/zero |
+| `currency` | string | Yes | `KHR` or `USD` |
+| `description` | string | No | Max 250 characters |
+| `payment_limit` | number | No | Maximum transaction count |
+| `expired_date` | string/null | No | Expiration date (null = no expiry) |
+| `return_url` | string | No | Base64-encoded callback URL |
+| `merchant_ref_no` | string | No | Your reference ID (max 50 chars) |
+| `payout` | array | No | Payout instructions: `[{"acc": "...", "amt": ...}]` |
+
+### Example `merchant_auth` JSON
+
+```json
+{
+  "mc_id": "merchant_id",
+  "title": "Payment Title",
+  "amount": 0.03,
+  "currency": "USD",
+  "description": "Description",
+  "payment_limit": 5,
+  "expired_date": null,
+  "return_url": "Base64-encoded URL",
+  "merchant_ref_no": "ref_no",
+  "payout": [
+    {"acc": "account_number", "amt": 0.01},
+    {"acc": "account_number_2", "amt": 0.02}
+  ]
+}
+```
+
+## Response
+
+**HTTP 200**
+
+### `data` Object
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `id` | string | Unique payment link ID |
+| `title` | string | Payment link title |
+| `image` | object | `{ image: string, filename: string, size: number }` |
+| `amount` | number | Payment amount |
+| `currency` | string | `KHR` or `USD` |
+| `status` | string | `OPEN` for newly created links |
+| `description` | string | Payment link description |
+| `payment_limit` | number | Max transaction count |
+| `total_amount` | number | Amount after refund |
+| `total_trxn` | number | Completed transactions count |
+| `created_at` | string | Creation timestamp |
+| `updated_at` | string | Last update timestamp |
+| `expired_date` | number | Expiration timestamp |
+| `payment_link` | string | Full payment link URL |
+| `return_url` | string | Callback URL |
+| `total_amount_org` | string | Amount before refund |
+| `total_refund` | number | Refunded amount |
+| `merchant_ref_no` | string | Your reference number |
+| `outlet_id` | string | Unique outlet identifier |
+| `outlet_name` | string | Outlet name |
+
+### Payout Array Items
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `acc` | string | ABA account number or MID |
+| `amt` | number | Payout amount |
+| `acc_name` | string | Beneficiary/outlet name |
+
+## Status Codes
+
+| Code | Description |
+|------|-------------|
+| `PTL02` | Wrong hash |
+| `PTL05` | Parameter invalid format |
+| `PTL99` | Invalid merchant currency |
+| `PTL132` | Invalid payment link |
