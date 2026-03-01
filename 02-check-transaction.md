@@ -26,10 +26,11 @@ POST /api/payment-gateway/v1/payments/check-transaction-2
 ## Hash Generation
 
 ```php
+// public key provided by ABA Bank
 $api_key = "API KEY PROVIDED BY ABA BANK";
-// Official docs show: $b4hash = $merchant_id . $tran_id;
-// Actual sandbox requires req_time in the hash:
+// Prepare the data to be hashed
 $b4hash = $req_time . $merchant_id . $tran_id;
+// Generate the HMAC hash using SHA-512 and encode it in Base64
 $hash = base64_encode(hash_hmac('sha512', $b4hash, $api_key, true));
 ```
 
