@@ -46,11 +46,15 @@ POST /api/payment-gateway/v1/payments/purchase
 
 ## Hash Generation
 
-Concatenate all parameter values in the order they appear, then HMAC-SHA512 with API key and Base64-encode.
+Concatenate all parameter values then HMAC-SHA512 with API key and Base64-encode.
+
+> **Note:** The official docs do not provide the explicit `$b4hash` concatenation order for Purchase (unlike Check Transaction). The table order above is the documentation layout, **not** the hash field order. The actual hash order verified against the sandbox is:
+>
+> `req_time, merchant_id, tran_id, amount, items, shipping, firstname, lastname, email, phone, type, payment_option, return_url, cancel_url, continue_success_url, return_deeplink, currency, custom_fields, return_params, view_type, payment_gate, payout, lifetime, additional_params, google_pay_token, skip_success_page`
 
 ```php
 $api_key = "API KEY PROVIDED BY ABA BANK";
-// Concatenate all request parameters
+$b4hash = $req_time . $merchant_id . $tran_id . $amount . $items . $shipping . $firstname . $lastname . $email . $phone . $type . $payment_option . $return_url . $cancel_url . $continue_success_url . $return_deeplink . $currency . $custom_fields . $return_params . $view_type . $payment_gate . $payout . $lifetime . $additional_params . $google_pay_token . $skip_success_page;
 $hash = base64_encode(hash_hmac('sha512', $b4hash, $api_key, true));
 ```
 

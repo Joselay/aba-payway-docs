@@ -10,7 +10,7 @@ POST /api/payment-gateway/v1/payments/transaction-list-2
 
 **Base URL**: `https://checkout-sandbox.payway.com.kh/` (sandbox) | `https://checkout.payway.com.kh/` (production)
 
-**Content-Type**: `application/json`
+**Content-Type**: `application/json` (Note: sandbox may require `multipart/form-data` despite this documentation)
 
 **Rate Limit**: 50 requests per minute
 

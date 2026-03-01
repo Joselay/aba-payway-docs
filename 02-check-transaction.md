@@ -10,7 +10,7 @@ POST /api/payment-gateway/v1/payments/check-transaction-2
 
 **Base URL**: `https://checkout-sandbox.payway.com.kh/` (sandbox) | `https://checkout.payway.com.kh/` (production)
 
-**Content-Type**: `application/json`
+**Content-Type**: `application/json` (Note: sandbox may require `multipart/form-data` despite this documentation)
 
 **Rate Limit**: 600 requests/second
 
@@ -27,7 +27,9 @@ POST /api/payment-gateway/v1/payments/check-transaction-2
 
 ```php
 $api_key = "API KEY PROVIDED BY ABA BANK";
-$b4hash = $merchant_id . $tran_id;
+// Official docs show: $b4hash = $merchant_id . $tran_id;
+// Actual sandbox requires req_time in the hash:
+$b4hash = $req_time . $merchant_id . $tran_id;
 $hash = base64_encode(hash_hmac('sha512', $b4hash, $api_key, true));
 ```
 
