@@ -29,7 +29,7 @@ POST /api/payment-gateway/v1/payments/generate-qr
 | `currency` | string | 3 | Yes | `KHR` or `USD` |
 | `payment_option` | string | 20 | Yes | `abapay_khqr`, `wechat` (USD only), or `alipay` (USD only) |
 | `lifetime` | integer | — | Yes | Transaction lifetime in minutes (min: 3, max: 43200 / 30 days). Default: 30 days |
-| `qr_image_template` | string | 20 | Yes | QR image template option (6 templates available) |
+| `qr_image_template` | string | 20 | Yes | QR image template: `template1`, `template1_color`, `template2`, `template2_color`, `template3_color`, `template4`, `template4_color`, `template5`, `template5_color`, `template6_color` |
 | `hash` | string | — | Yes | Base64-encoded HMAC-SHA512 hash |
 | `first_name` | string | 20 | No | Payer's first name |
 | `last_name` | string | 20 | No | Payer's last name |
