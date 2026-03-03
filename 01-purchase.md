@@ -25,24 +25,69 @@ POST /api/payment-gateway/v1/payments/purchase
 | `lastname` | string | 100 | No | Buyer's last name |
 | `email` | string | 50 | No | Buyer's email |
 | `phone` | string | 20 | No | Buyer's phone |
-| `type` | string | 20 | No | Transaction type: `pre-auth` or `purchase` (default). Pre-auth only supports ABA PAY, KHQR, and Card Payment |
+| `type` | string | 20 | No | Type of the transaction, default value is `purchase`. Supported values: `pre-auth` (for pre purchase), `purchase` (for full purchase) |
 | `payment_option` | string | 20 | No | One of: `cards`, `abapay_khqr`, `abapay_khqr_deeplink`, `alipay`, `wechat`, `google_pay` |
-| `items` | string | 500 | No | Base64-encoded JSON array describing items. This is only description/remark — price or quantity will not be used for calculation |
+| `items` | string | 500 | No | A base64-encoded JSON array describing the items being purchased |
 | `shipping` | number | — | No | Shipping fee |
 | `currency` | string | — | No | `KHR` or `USD`. Defaults to merchant profile setting |
 | `return_url` | string | — | No | URL to receive callbacks upon payment completion, Base64-encoded |
-| `cancel_url` | string | — | No | URL to redirect after user closes payment dialog |
+| `cancel_url` | string | — | No | The URL to redirect to after the user closes the payment dialog or when user cancel the payment |
 | `skip_success_page` | integer | — | No | `0` (don't skip) or `1` (skip success page). Defaults to profile config |
 | `continue_success_url` | string | — | No | URL to redirect after successful payment |
-| `return_deeplink` | string | — | No | Base64-encoded deeplink for mobile app redirect. Must include iOS and Android schemes. Mandatory for mobile integration |
-| `custom_fields` | string | — | No | Additional JSON information to attach to the transaction |
+| `return_deeplink` | string | — | No | The deep link for redirecting to the app after a successful payment from ABA Mobile. Must be base64-encoded and include both iOS and Android schemes |
+| `custom_fields` | string | — | No | Additional information that you want to attach to the transaction. This information will appear in the transaction list, transaction details and export report |
 | `return_params` | string | — | No | Information included when PayWay calls your return URL |
 | `view_type` | string | — | No | `hosted_view` or `popup` |
 | `payment_gate` | integer | — | No | Set to `0` for Checkout service |
 | `payout` | string | — | No | Base64-encoded JSON string with payout details |
-| `additional_params` | string | — | No | Currently supports WeChat Mini Program |
+| `additional_params` | string | — | No | Currently supports WeChat Mini Program. Supported value keys: `wechat sub_appid` and `wechat_sub_openid` |
 | `lifetime` | integer | — | No | Payment lifetime in minutes (min: 3, max: 43200 for 30 days). Payments after exceeding lifetime are rejected |
 | `google_pay_token` | string | — | No | Required if `payment_option` is `google_pay` |
+
+### Items Example
+
+```php
+$item = base64_encode(json_encode([
+    ["name" => "product 1","quantity" => 1,"price" => 1.00],
+    ["name" => "product 2","quantity" => 2, "price" => 4.00]
+]));
+```
+
+### Return Deeplink Example
+
+```php
+$return_deeplink = base64_encode(json_encode([
+    "ios_scheme" => "DEEPLINK TO RETURN TO YOUR IOS APP",
+    "android_scheme" => "DEEPLINK TO RETURN TO YOUR ANDROID APP"
+]));
+```
+
+### Custom Fields Example
+
+```php
+$custom_field = base64_encode(json_encode([
+    "field1" => "myvalue1",
+    "field2" => "myvalue2"
+]));
+```
+
+### Payout Example
+
+```php
+$payout = base64_encode(json_encode([
+    ["acc" => "000133879","amt"=> 1],
+    ["acc" => "000133880","amt" => 1]
+]));
+```
+
+### Additional Params Example
+
+```php
+$additional_params = base64_encode(json_encode([
+    'wechat_sub_appid' => 'YOUR WECHAT APP ID',
+    'wechat_sub_openid' => 'YOUR WECHAT OPEN ID'
+]));
+```
 
 ## Hash Generation
 
@@ -71,9 +116,9 @@ $hash = base64_encode(hash_hmac('sha512', $b4hash, $api_key, true));
         "message": "Success!",
         "tran_id": "trx-20201019130949"
     },
-    "qr_string": "...",
-    "abapay_deeplink": "abamobilebank://ababank.com?type=payway&qrcode=...",
-    "checkout_qr_url": "https://checkout-uat.payway.com.kh/..."
+    "qr_string": "00020101021230510016abaakhppxxx@abaa01153250212100849350208ABA Bank520410165...",
+    "abapay_deeplink": "abamobilebank://ababank.com?type=payway&qrcode=00020101021230510016...",
+    "checkout_qr_url": "https://checkout-uat.payway.com.kh/eyJzdGF0dXMiOnsiY29kZSI6IjAwIiw..."
 }
 ```
 
