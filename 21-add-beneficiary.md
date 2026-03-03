@@ -1,6 +1,6 @@
-# Add Beneficiary to Whitelist API
+# Add a beneficiary to whitelist
 
-Registers a beneficiary (ABA Account holder or ABA Merchant) for payouts. Beneficiaries must be whitelisted before they can receive funds.
+Use this API to whitelist accounts that you intend to split payment and payout. You'll first have to whitelist the accounts before you can use those accounts to request on payout request.
 
 ## Endpoint
 
@@ -17,16 +17,16 @@ POST /api/merchant-portal/merchant-access/whitelist-account/add-whitelist-payout
 | Field | Type | Max Length | Required | Description |
 |-------|------|-----------|----------|-------------|
 | `request_time` | string | — | Yes | Request date and time in UTC format as `YYYYMMDDHHmmss` |
-| `merchant_id` | string | 20 | Yes | Unique merchant key from ABA Bank |
-| `merchant_auth` | string | — | Yes | RSA-encrypted, Base64-encoded JSON object |
-| `hash` | string | — | Yes | Base64-encoded HMAC-SHA512 hash of `request_time` + `merchant_auth` |
+| `merchant_id` | string | 20 | Yes | A unique merchant key which provided by ABA Bank |
+| `merchant_auth` | string | — | Yes | The JSON-encoded object containing `mc_id`, `payee` encrypted using RSA public key encryption in chunks |
+| `hash` | string | — | Yes | Base64 encode of hash hmac sha512 encryption of concatenates values `request_time` and `merchant_auth` with `public_key` |
 
 ### `merchant_auth` Object (before encryption)
 
 | Field | Type | Required | Description |
 |-------|------|----------|-------------|
-| `mc_id` | string | Yes | Same as `merchant_id` |
-| `payee` | string | Yes | Beneficiary identifier: MID or ABA account number |
+| `mc_id` | string | Yes | A unique merchant key which provided by ABA Bank. Same value as `merchant_id` |
+| `payee` | string | Yes | Beneficiary identifier: It can be either a MID or an ABA account |
 
 ### RSA Encryption
 
@@ -59,12 +59,12 @@ $hash = base64_encode(hash_hmac('sha512', $b4hash, $api_key, true));
 
 | Field | Type | Max Length | Description |
 |-------|------|-----------|-------------|
-| `name` | string | 255 | Beneficiary name (outlet name for MID, account holder name for account) |
-| `payee` | string | 250 | MID or ABA Account number |
-| `currency` | string | 10 | Merchant currency (MID) or account currency |
-| `type` | string | 20 | `Merchant` or `ABA Account` |
-| `status` | integer | — | `1` = Active, `0` = Inactive |
-| `created_at` | string | — | Date and time added to whitelist |
+| `name` | string | 255 | The name of the beneficiary: if the type is MID, it will be the outlet name; if it is an account, it will be the account holder's name |
+| `payee` | string | 250 | This value represent the destination beneficiary it can be MID or ABA Account number |
+| `currency` | string | 10 | If payee is MID, the value here will be merchant's currency and if the payee is an ABA Account holder it will return account currency |
+| `type` | string | 20 | If payee is MID, the value here is `Merchant` if the payee is an ABA Account holder it will return `ABA Account` |
+| `status` | integer | — | The current status of the beneficiary. `1` = Active, `0` = Inactive |
+| `created_at` | string | — | Date and time that the beneficiary was created or added to the list |
 
 ### Example Response
 

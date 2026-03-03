@@ -1,6 +1,6 @@
-# Cancel Pre-Auth Transaction API
+# Cancel Pre-Purchase Transaction
 
-Releases temporary holds on customer payment methods before final transaction completion.
+Cancel pre-auth (or cancel pre-authorization) is the process of releasing a temporary hold on funds placed on a customer's payment method before the final transaction is completed.
 
 ## Endpoint
 
@@ -14,27 +14,26 @@ POST /api/merchant-portal/merchant-access/online-transaction/pre-auth-cancellati
 
 ## Important Notes
 
-- Pre-authorizations can only be cancelled while pending
-- Each transaction can be cancelled only once
-- Successful cancellations update status to `CANCELLED`
-- ABA PAY and Card transactions release funds instantly
-- KHQR transactions process refunds
+- You can only cancel a pre-authorization if the transaction is still pending; if the pre-auth has already been completed or previously cancelled, it cannot be cancelled again.
+- Each transaction's pre-authorization can be cancelled only once.
+- Once the cancellation is successfully processed, the transaction status will update to 'CANCELLED.'
+- For ABA PAY and Card transactions, funds are instantly released back to the payer, whereas for KHQR transactions, the funds will be refunded to the payer.
 
 ## Request Parameters
 
 | Field | Type | Max Length | Required | Description |
 |-------|------|-----------|----------|-------------|
-| `request_time` | string | — | Yes | Request date/time in UTC format: `YYYYMMDDHHmmss` |
-| `merchant_id` | string | 20 | Yes | Unique merchant key |
-| `merchant_auth` | string | — | Yes | RSA-encrypted, Base64-encoded JSON object |
-| `hash` | string | — | Yes | Base64-encoded HMAC-SHA512 hash of `merchant_id` + `merchant_auth` + `request_time` |
+| `request_time` | string | — | Yes | Request date and time in UTC format as `YYYYMMDDHHmmss`. |
+| `merchant_id` | string | 20 | Yes | A unique merchant key which provided by ABA Bank. |
+| `merchant_auth` | string | — | Yes | The JSON-encoded object containing `mc_id` and `tran_id` using RSA public key encryption in chunks. |
+| `hash` | string | — | Yes | Base64-encoded HMAC-SHA512 hash of concatenated values: `merchant_id`, `merchant_auth`, and `request_time` with `public_key`. |
 
 ### `merchant_auth` Object (before encryption)
 
 | Field | Type | Required | Description |
 |-------|------|----------|-------------|
-| `mc_id` | string | Yes | Same as `merchant_id` |
-| `tran_id` | string | Yes | Pre-auth transaction ID to cancel |
+| `mc_id` | string | Yes | A unique merchant key which provided by ABA Bank. Same value as `merchant_id`. |
+| `tran_id` | string | Yes | Pre-auth purcahse transaction id to cancel. |
 
 ## Response
 
@@ -42,9 +41,9 @@ POST /api/merchant-portal/merchant-access/online-transaction/pre-auth-cancellati
 
 | Field | Type | Description |
 |-------|------|-------------|
-| `grand_total` | number | Original pre-auth authorized amount |
+| `grand_total` | number | The original amount authorized for pre-auth transactions. |
 | `currency` | string | Original transaction currency |
-| `transaction_status` | string | `CANCELLED` |
+| `transaction_status` | string | Status of the transaction. After successfully cancelling, its status is `CANCELLED` |
 | `status.code` | string | Response code |
 | `status.message` | string | Descriptive message |
 
@@ -57,11 +56,11 @@ POST /api/merchant-portal/merchant-access/online-transaction/pre-auth-cancellati
 | `PTL04` | Parameter validation failed. Verify that all required fields are correctly formatted. |
 | `PTL06` | The request has expired. Please generate a new request and retry. |
 | `PTL36` | Invalid transaction. Ensure that the transaction ID is correct. |
+| `PTL62` | Invalid merchant information. Verify your merchant ID and try again. |
+| `PTL63` | Merchant does not have a security configuration file. Contact support for assistance. |
 | `PTL59` | Unable to complete or cancel Pre-auth. Check the transaction status before retrying. |
 | `PTL60` | Pre-auth amount exceeds the allowed limit. Reduce the amount and try again. |
 | `PTL61` | Invalid action type. Ensure you are using a valid operation type. |
-| `PTL62` | Invalid merchant information. Verify your merchant ID and try again. |
-| `PTL63` | Merchant does not have a security configuration file. Contact support for assistance. |
 | `PTL157` | An unexpected error occurred. Please try again later or contact our digital support team. |
 | `PTL168` | Concurrent requests are not allowed. Wait a few seconds and retry. |
 | `PTL169` | The merchant profile cannot accept payments. Settlement account is closed. |

@@ -1,6 +1,10 @@
-# QR API (Generate QR Code)
+# QR API
 
-Generates dynamic QR codes for payments via ABA KHQR, WeChat Pay, or Alipay.
+OpenAPI Specification
+
+Supported payment options:
+- Transaction currency KHR: ABA PAY, KHQR
+- Transaction currency USD: ABA PAY, KHQR, WeChat and Alipay
 
 ## Endpoint
 
@@ -12,44 +16,34 @@ POST /api/payment-gateway/v1/payments/generate-qr
 
 **Content-Type**: `application/json`
 
-## Use Cases
-
-- Cashier screens & POS systems
-- Self-service kiosks
-- QR codes on invoices/receipts
-
 ## Request Parameters
 
 | Field | Type | Max Length | Required | Description |
 |-------|------|-----------|----------|-------------|
 | `req_time` | string | — | Yes | Request date and time in UTC format as `YYYYMMDDHHmmss` |
-| `merchant_id` | string | 30 | Yes | Unique merchant key provided by ABA Bank |
-| `tran_id` | string | 20 | Yes | Unique transaction identifier |
-| `amount` | number | — | Yes | Total amount (min: 100 KHR or 0.01 USD) |
-| `currency` | string | 3 | Yes | `KHR` or `USD` |
-| `payment_option` | string | 20 | Yes | `abapay_khqr`, `wechat` (USD only), or `alipay` (USD only) |
-| `lifetime` | integer | — | Yes | Transaction lifetime in minutes (min: 3, max: 43200 / 30 days). Default: 30 days |
-| `qr_image_template` | string | 20 | Yes | QR image template: `template1`, `template1_color`, `template2`, `template2_color`, `template3_color`, `template4`, `template4_color`, `template5`, `template5_color`, `template6_color` |
-| `hash` | string | — | Yes | Base64-encoded HMAC-SHA512 hash |
+| `merchant_id` | string | 30 | Yes | A unique merchant key which provided by ABA Bank |
+| `tran_id` | string | 20 | Yes | This is the unique transaction ID that identifies the transaction |
+| `amount` | number | — | Yes | The total transaction amount must be at least **100 KHR** or **0.01 USD** |
+| `currency` | string | 3 | Yes | Supported transaction currencies: `KHR` and `USD`. Not case-sensitive |
+| `payment_option` | string | 20 | Yes | Supported payment options: `abapay_khqr` (Payway will response ABA KHQR), `wechat` (PayWay will respond with a WeChat QR, only for USD transactions), `alipay` (PayWay will respond with an Alipay QR, only for USD transactions) |
+| `lifetime` | integer | — | Yes | Transaction lifetime in minutes. Default: 30 days. Minimum: 3 mins. Maximum: 30 days |
+| `qr_image_template` | string | 20 | Yes | The QR image comes with various options to suit your needs |
+| `hash` | string | — | Yes | Base64 encode of hash hmac sha512 encryption of concatenated values `req_time`, `merchant_id`, `tran_id`, `amount`, `items`, `first_name`, `last_name`, `email`, `phone`, `purchase_type`, `payment_option`, `callback_url`, `return_deeplink`, `currency`, `custom_fields`, `return_params`, `payout`, `lifetime`, and `qr_image_template` |
 | `first_name` | string | 20 | No | Payer's first name |
 | `last_name` | string | 20 | No | Payer's last name |
 | `email` | string | 50 | No | Payer's email address |
 | `phone` | string | 20 | No | Payer's phone number |
-| `purchase_type` | string | 20 | No | `pre-auth` or `purchase` (default) |
-| `items` | string | 500 | No | Base64-encoded JSON item list (max 10 items) |
-| `callback_url` | string | 255 | No | Base64-encoded URL to receive payment callbacks |
+| `purchase_type` | string | 20 | No | Supported values: `pre-auth` and `purchase`. If the merchant does not provide a value, the default will be `purchase`. Note: Alipay & WeChat do not support pre-auth |
+| `items` | string | 500 | No | Item list description in Base64-encoded JSON format. Maximum of 10 items |
+| `callback_url` | string | 255 | No | URL to receive callbacks upon payment completion, encrypted with Base64 |
 | `return_deeplink` | string | 255 | No | Base64-encoded JSON with `android_scheme` and `ios_scheme` keys |
-| `custom_fields` | string | 255 | No | Base64-encoded additional custom fields |
+| `custom_fields` | string | 255 | No | Additional custom fields to attach to the QR, encrypted with Base64 |
 | `return_params` | string | — | No | Additional information to include in the pushback once the payment is completed |
-| `payout` | string | 255 | No | Base64-encoded JSON payout instructions |
-
-> **Note:** Alipay & WeChat do not support pre-auth.
+| `payout` | string | 255 | No | Payout instructions in a Base64-encoded JSON string |
 
 ## Hash Generation
 
-Concatenate all parameter values then HMAC-SHA512 with API key and Base64-encode.
-
-> **Note:** The hash field order differs from the parameter table order above. The explicit concatenation order from the remote docs is:
+> **Note:** The hash field order differs from the parameter table order above. The explicit concatenation order is:
 >
 > `req_time, merchant_id, tran_id, amount, items, first_name, last_name, email, phone, purchase_type, payment_option, callback_url, return_deeplink, currency, custom_fields, return_params, payout, lifetime, qr_image_template`
 
@@ -123,12 +117,10 @@ $hash = base64_encode(hash_hmac('sha512', $b4hash, $api_key, true));
 | `amount` | number | Transaction amount |
 | `currency` | string | Transaction currency |
 | `qrString` | string | QR content as string |
-| `qrImage` | string | QR as base64 image (can be ~0.5 MB for high resolution) |
-| `abapay_deeplink` | string | ABA Mobile deep link |
-| `app_store` | string | App Store download link |
-| `play_store` | string | Play Store download link |
-
-> **Note**: For bandwidth-constrained environments, use `qrString` to generate QR codes locally instead of using `qrImage`.
+| `qrImage` | string | QR as base64 image |
+| `abapay_deeplink` | string | ABA Mobile Deeplink. You can use this deeplink to automatically open ABA Mobile so that customer can confirm payment |
+| `app_store` | string | If you try to open `abapay_deeplink` and the payer does not have ABA Mobile installed, you can redirect the user to the app store to download ABA Mobile |
+| `play_store` | string | If you try to open `abapay_deeplink` and the payer does not have ABA Mobile installed, you can redirect the user to the play store to download ABA Mobile |
 
 ```json
 {
@@ -146,15 +138,6 @@ $hash = base64_encode(hash_hmac('sha512', $b4hash, $api_key, true));
   "play_store": "https://play.google.com/store/apps/details?id=..."
 }
 ```
-
-## Callback Notification (POST to `callback_url`)
-
-| Field | Type | Max Length | Description |
-|-------|------|-----------|-------------|
-| `tran_id` | string | 20 | Payment gateway transaction ID |
-| `apv` | integer | 6 | Transaction approval code |
-| `status` | string | — | Request status `"00"` |
-| `merchant_ref_no` | string | — | Your payment link reference |
 
 ## Status Codes
 

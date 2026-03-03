@@ -1,6 +1,6 @@
-# Complete Pre-Auth Transaction with Payout API
+# Complete Pre-Auth Transaction with Payout
 
-Captures pre-authorized funds and distributes payments to beneficiaries simultaneously.
+A complete pre-auth refers to the action where the merchant proceeds with capturing the funds after the initial authorization, typically at the time the product or service is provided.
 
 ## Endpoint
 
@@ -14,26 +14,27 @@ POST /api/merchant-portal/merchant-access/online-transaction/pre-auth-completion
 
 ## Key Conditions
 
-- Same conditions as [Complete Pre-Auth](./17-complete-pre-auth.md)
-- Payout instructions are included only when completing (not during initial pre-auth creation)
+- You can only complete the pre-auth once.
+- Pre-auth cannot be completed on transactions that have already expired or been canceled.
+- For card payments, you can complete the pre-auth with an additional 10% above the original pre-auth amount.
 
 ## Request Parameters
 
 | Field | Type | Max Length | Required | Description |
 |-------|------|-----------|----------|-------------|
-| `request_time` | string | — | Yes | UTC format: `YYYYMMDDHHmmss` |
-| `merchant_id` | string | 20 | Yes | Unique merchant key |
-| `merchant_auth` | string | — | Yes | RSA-encrypted, Base64-encoded JSON object |
-| `hash` | string | — | Yes | Base64-encoded HMAC-SHA512 hash |
+| `request_time` | string | — | Yes | Request date and time in UTC format as `YYYYMMDDHHmmss`. |
+| `merchant_id` | string | 20 | Yes | A unique merchant key provided by ABA Bank. |
+| `merchant_auth` | string | — | Yes | The JSON-encoded object contains the fields `mc_id`, `tran_id`, and `complete_amount`, and `payout` which are encrypted using RSA public key encryption in chunks. |
+| `hash` | string | — | Yes | Base64-encoded HMAC-SHA512 hash of concatenated values: `merchant_auth`, `request_time`, and `merchant_id` with `public_key`. |
 
 ### `merchant_auth` Object (before encryption)
 
 | Field | Type | Required | Description |
 |-------|------|----------|-------------|
-| `mc_id` | string | Yes | Same as `merchant_id` |
-| `tran_id` | string | Yes | Pre-auth transaction ID |
-| `complete_amount` | decimal | Yes | Amount to capture |
-| `payout` | array | Yes | Payout instructions: `[{"acc": "...", "amt": ...}]` |
+| `mc_id` | string | Yes | A unique merchant key which provided by ABA Bank. Same value as `merchant_id`. |
+| `tran_id` | string | Yes | Pre-auth purcahse transaction id to complete. |
+| `complete_amount` | decimal | Yes | Amount to complete. |
+| `payout` | array | Yes | Payout instruction |
 
 ## Response
 
@@ -41,9 +42,9 @@ POST /api/merchant-portal/merchant-access/online-transaction/pre-auth-completion
 
 | Field | Type | Description |
 |-------|------|-------------|
-| `grand_total` | number | Original pre-auth authorized amount |
-| `currency` | string | Transaction currency |
-| `transaction_status` | string | `COMPLETED` on success |
+| `grand_total` | number | The original amount authorized for pre-auth transactions. |
+| `currency` | string | Original transaction currency |
+| `transaction_status` | string | Transaction status. Once successfully completed, the status will be `COMPLETED` |
 | `status.code` | string | Response code |
 | `status.message` | string | Descriptive message |
 
@@ -56,11 +57,11 @@ POST /api/merchant-portal/merchant-access/online-transaction/pre-auth-completion
 | `PTL04` | Parameter validation failed. |
 | `PTL06` | The request has expired. |
 | `PTL36` | Invalid transaction. |
+| `PTL62` | Merchant information is invalid. |
+| `PTL63` | The merchant does not have a security configuration file. |
 | `PTL59` | Unable to complete or cancel the pre-authorization. |
 | `PTL60` | Pre-authorization completion amount exceeds the authorized limit. |
 | `PTL61` | Invalid action type. |
-| `PTL62` | Merchant information is invalid. |
-| `PTL63` | The merchant does not have a security configuration file. |
 | `PTL153` | Completing pre-authorization fees for a merchant with multiple settlement accounts is not allowed. |
 | `PTL157` | An unexpected error occurred. Please try again later or contact our digital support team. |
 | `PTL168` | Concurrent requests are not allowed for this operation. Please try again in a few seconds. |
