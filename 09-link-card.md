@@ -21,7 +21,7 @@ Before using this API, please ensure that your profile has the Card on File feat
 | Field | Type | Required | Description |
 |-------|------|----------|-------------|
 | `merchant_id` | string | Yes | A unique merchant key which provided by ABA Bank |
-| `ctid` | string | Yes | Your consumer identification number |
+| `ctid` | string | No | Your consumer identification number |
 | `return_param` | string | Yes | Extra information that you want to include when payment gateway calls your `return_url` |
 | `firstname` | string | No | Your consumer first name |
 | `lastname` | string | No | Your consumer last name |
