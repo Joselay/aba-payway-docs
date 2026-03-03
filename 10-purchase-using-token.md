@@ -107,87 +107,87 @@ $hash = base64_encode(hash_hmac('sha512', $b4hash, $api_key, true));
 | `5` | Transaction not found |
 | `6` | Requested Domain is not in whitelist |
 | `7` | Wrong return param |
-| `8` | Data saving error |
+| `8` | Something went wrong while saving Data. Please try again later or contact merchant for help |
 | `10` | Wrong shipping price |
-| `11` | General error |
-| `12` | Payment currency not allowed |
+| `11` | Something went wrong. Try again or contact the merchant for help |
+| `12` | Payment currency is not allowed |
 | `13` | Invalid items |
 | `14` | Invalid Credit Multi Acc |
-| `15` | Invalid channel values |
-| `16` | Invalid First Name |
-| `17` | Invalid Last Name |
-| `18` | Invalid Phone |
+| `15` | Invalid or missing channel values from Smart merchant |
+| `16` | Invalid First Name. It must not contain numbers or special characters or more than 100 characters |
+| `17` | Invalid Last Name. It must not contain numbers or special characters or more than 100 characters |
+| `18` | Invalid Phone Number |
 | `19` | Invalid Email |
-| `20` | Contact merchant |
-| `21` | API lifetime ended |
-| `22` | Pre-Auth not enabled |
-| `23` | Payment option disabled |
-| `24` | Decryption failed |
-| `25` | Max 10 payouts exceeded |
+| `20` | Something went wrong. Please contact the merchant |
+| `21` | End of API lifetime |
+| `22` | Pre-Auth Transaction is not enabled |
+| `23` | Selected Payment Option is not enabled for this Merchant Profile |
+| `24` | Can not decrypt data |
+| `25` | Allow maximum 10 payout per requests |
 | `26` | Invalid Merchant Profile |
 | `27` | Invalid ctid |
 | `28` | Invalid pwt |
 | `29` | Invalid pwt or ctid |
-| `30` | Merchant not COF enabled |
-| `31` | Unsecure 3DS page |
+| `30` | Merchant is not enabled COF |
+| `31` | Unsecure 3Ds page |
 | `32` | Cannot identify cardOrigin |
-| `33` | Invalid exchange rate |
-| `34` | Invalid payout info |
-| `35` | Invalid payout account/amount |
-| `36` | Payout accounts not whitelisted |
-| `37` | Invalid Transaction ID in payout |
-| `38` | Duplicate account in payout |
-| `39` | Duplicate Transaction ID in payout |
-| `40` | MID not linked |
-| `41` | Invalid account status |
-| `42` | Missing MID |
-| `43` | Transaction limit reached |
-| `44` | Zero amount not allowed |
-| `45` | KHR cannot contain decimals |
-| `46` | KHR must exceed 100 |
-| `47` | Invalid parameters |
+| `33` | Exchange rate data is invalid |
+| `34` | Payout Info is invalid |
+| `35` | Payout account or amount is invalid |
+| `36` | Payout accounts are not in whitelist |
+| `37` | Payout contain invalid Transaction ID |
+| `38` | Payout contain Duplicated Account |
+| `39` | Payout contain Duplicated Transaction ID |
+| `40` | Payout info contain mid not linked with any Merchant Profile |
+| `41` | Payout info contain account invalid status |
+| `42` | Merchant Profile's MID is missing. Please try again or contact the merchant for help |
+| `43` | Purchase amount has reached transaction limit |
+| `44` | Purchase with zero amount is not allowed |
+| `45` | Purchase amount for KHR currency could not contain decimal place |
+| `46` | KHR Amount must be greater than 100 KHR |
+| `47` | Something went wrong with requested parameters. Please try again or contact the merchant for help |
 | `48` | Invalid Start Date |
 | `49` | Invalid End Date |
 | `50` | Invalid Date Range |
-| `51` | Max 3-day range |
+| `51` | Maximum date range is allowed only 3 days |
 | `52` | Invalid Amount Range |
-| `53` | Transaction expired |
-| `54` | WeChat QR request failed |
-| `55` | WeChat validation failed |
-| `56` | Card validation failed |
-| `57` | Invalid card number |
-| `58` | Payout cannot be fixed |
-| `59` | QR string error |
-| `60` | General error |
-| `61` | QR in use |
-| `62` | Transaction exists in core |
-| `63` | Same account error |
-| `64` | MID not in core |
-| `65` | General error |
-| `66` | QR on invoice unavailable |
-| `67` | Transaction expired |
-| `68` | Lifetime too short |
-| `69` | Daily limit reached |
-| `70` | Transaction limit reached |
-| `71` | Settlement account closed |
+| `53` | Transaction is expired. Please try again or contact the merchant for help |
+| `54` | We are unable to request QR from Wechat system. Please try again or contact the merchant for help |
+| `55` | We are unable to validate your transaction with Wechat system. Please try again or contact the merchant for help |
+| `56` | We are unable to validate your card source. Please try again or contact the merchant for help |
+| `57` | Provide invalid card number |
+| `58` | Payout info can not be fixed with MID and ABA Account |
+| `59` | Something went wrong with QR String. Please try again or contact the merchant for help |
+| `60` | Something went wrong. Please try again or contact the merchant for help |
+| `61` | QR is already in use |
+| `62` | Transaction is already exist in core banking. Please perform new transaction or contact the merchant for help |
+| `63` | Payer's account is same as Merchant Profile's account. Please choose different account |
+| `64` | Merchant Profile's MID is not found in core banking. Please try again or contact the merchant for help |
+| `65` | Something went wrong. Please try again or contact the merchant for help |
+| `66` | QR on Invoice is currently not available for this Merchant Profile |
+| `67` | Transaction is expired. Please re-initiate the transaction |
+| `68` | Transaction Lifetime can not be less than 3 minutes |
+| `69` | Total purchase amount has reached daily limit. Please use difference account |
+| `70` | Purchase amount has reached transaction limit |
+| `71` | The merchant profile cannot accept payment because its settlement account is closed |
 | `72` | Invalid Transaction Status |
-| `73` | Invalid tran_id/merchant_id |
+| `73` | Invalid tran_id or merchant_id |
 | `74` | tran_id not found |
-| `75` | Invalid parameters |
-| `76` | No transaction fees |
-| `77` | Incompatible with discount |
-| `78` | Google Pay token missing |
-| `79` | Google Pay decryption failed |
-| `80` | Return URL not whitelisted |
-| `81` | Payout max amount exceeded |
-| `82` | Credential disabled |
-| `83` | Credential expired |
-| `84` | Purchase limit reached |
-| `85` | Unsupported mode |
-| `86` | Credential removed |
-| `200` | Canceled |
-| `201` | Declined |
-| `401` | Unauthorized |
-| `403` | General error |
-| `429` | Too many requests |
-| `503` | Maintenance |
+| `75` | Invalid Additional Parameters |
+| `76` | Merchant transactions do not support transaction fees |
+| `77` | Card payment transactions are not compatible with the discount program |
+| `78` | Payment Token missing in Google Pay |
+| `79` | Failed to decrypt the payment token provided by Google Pay |
+| `80` | The return URL is not in the whitelist |
+| `81` | The payout has exceeded the maximum allowable amount per transaction |
+| `82` | Payment credential is disabled |
+| `83` | Payment credential is expired |
+| `84` | Purchase reach limit amount per transaction |
+| `85` | Unsupported merchant purchase mode |
+| `86` | Payment credential is removed |
+| `200` | Payment was canceled |
+| `201` | Payment was declined |
+| `401` | Unauthorized access |
+| `403` | Something went wrong. Try again or contact the merchant for help |
+| `429` | Too many requests, please try again in 1 minute |
+| `503` | System Under Maintenance |
