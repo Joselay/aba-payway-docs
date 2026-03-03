@@ -64,16 +64,54 @@ $hash = base64_encode(hash_hmac('sha512', $b4hash, $api_key, true));
 
 **HTTP 200**
 
+Success response:
+
 ```json
 {
-  "data": [ ... ],
-  "page": "1",
-  "pagination": "40",
-  "status": {
-    "code": "00",
-    "message": "Success!",
-    "tran_id": "..."
-  }
+    "data": [
+        {
+            "transaction_id": "9495966779",
+            "transaction_date": "2025-10-08 09:55:15",
+            "original_currency": "USD",
+            "bank_ref": "",
+            "apv": "",
+            "discount_amount": 0,
+            "payment_status": "PENDING",
+            "payment_amount": 0,
+            "last_name": "",
+            "payment_currency": "",
+            "payment_type": "N/A",
+            "payer_account": "",
+            "total_amount": 0.01,
+            "phone": "010417430",
+            "original_amount": 0.01,
+            "payment_status_code": 2,
+            "bank_name": "",
+            "refund_amount": 0,
+            "first_name": "",
+            "email": "john@example.com",
+            "card_source": ""
+        }
+    ],
+    "pagination": "10",
+    "page": "1",
+    "status": {
+        "code": "00",
+        "tran_id": "163172901816084",
+        "message": "Success!"
+    }
+}
+```
+
+Exception response:
+
+```json
+{
+    "status": {
+        "code": "8",
+        "message": "Invalid Merchant Profile",
+        "tran_id": "1729573626"
+    }
 }
 ```
 
@@ -116,6 +154,6 @@ $hash = base64_encode(hash_hmac('sha512', $b4hash, $api_key, true));
 |------|-------------|
 | `00` | Success! |
 | `1` | Wrong hash |
-| `8` | Invalid merchant profile |
+| `8` | Invalid Merchant Profile |
 | `11` | Internal server error |
 | `429` | Rate limit exceeded |
