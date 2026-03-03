@@ -28,8 +28,8 @@ POST /api/payment-gateway/v1/payments/transaction-list-2
 | `merchant_id` | string | Yes | A unique merchant key which provided by ABA Bank |
 | `from_date` | string | No | Start date for filtering transactions, in the format `YYYY-MM-DD HH:mm:ss`. Default value is today at `00:00:00` |
 | `to_date` | string | No | End date for filtering transactions, in the format `YYYY-MM-DD HH:mm:ss`. Default value is today at `23:59:59` |
-| `from_amount` | number | No | Search transaction that has purchased amount from |
-| `to_amount` | number | No | Search transaction that has purchased amount to |
+| `from_amount` | string | No | Search transaction that has purchased amount from |
+| `to_amount` | string | No | Search transaction that has purchased amount to |
 | `status` | string | No | Possible values: `APPROVED`, `PRE-AUTH`, `REFUNDED`, `PENDING`, `DECLINED`, `CANCELLED`. No case sensitive, if you want to query multiple values please separate value by comma |
 | `page` | string | No | Current page index. Default value: `1` |
 | `pagination` | string | No | Total number of records per page. Default value `40`, maximum value is `1000` |
