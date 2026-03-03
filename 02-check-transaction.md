@@ -97,7 +97,7 @@ $hash = base64_encode(hash_hmac('sha512', $b4hash, $api_key, true));
 |------|-------------|
 | `00` | Success! |
 | `5` | Invalid hash |
-| `6` | Transaction not found |
+| `6` | tran_id not found |
 | `8` | Invalid merchant profile |
 | `11` | Internal server error |
 | `429` | Reach request limit |
