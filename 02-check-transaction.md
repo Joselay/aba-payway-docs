@@ -46,6 +46,28 @@ $hash = base64_encode(hash_hmac('sha512', $b4hash, $api_key, true));
 
 **HTTP 200**
 
+```json
+{
+    "data": {
+        "payment_status_code": 0,
+        "total_amount": 0.1,
+        "original_amount": 0.1,
+        "refund_amount": 0,
+        "discount_amount": 0,
+        "payment_amount": 0.1,
+        "payment_currency": "USD",
+        "apv": "753786",
+        "payment_status": "APPROVED",
+        "transaction_date": "2025-02-13 13:55:25"
+    },
+    "status": {
+        "code": "00",
+        "message": "Success!",
+        "tran_id": "17394277693"
+    }
+}
+```
+
 ### `data` Object
 
 | Field | Type | Description |
