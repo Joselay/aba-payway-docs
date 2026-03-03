@@ -22,13 +22,15 @@ Beneficiaries must be whitelisted before payouts can be made. Use the [Add Benef
 |-------|------|-----------|----------|-------------|
 | `merchant_id` | string | 255 | Yes | A unique merchant key which provided by ABA Bank. |
 | `tran_id` | string | 20 | Yes | Unique transaction id |
-| `beneficiaries` | string | 1000 | Yes | Payout instruction contains information of the beneficiary. |
+| `beneficiaries` | string | 1000 | Yes | Payout instruction contains information of the beneficiary. RSA-encrypted JSON array. |
 | `amount` | number (float) | — | Yes | Total payout amount (sum of all beneficiary amount). KHR minimum 100KHR; USD minimum 0.01USD |
 | `currency` | string | 3 | Yes | Transaction currency. Either `KHR` or `USD`. |
 | `custom_fields` | string | 255 | No | An additional field information as JSON string. This information will be associate with the payment transaction. |
 | `hash` | string | 512 | Yes | Base64 encode of hash hmac sha512 encryption of concatenates values `merchant_id`, `tran_id`, `beneficiaries`, `amount`, `custom_fields` and `currency` with `public_key`. |
 
 ### Beneficiaries Array (before encryption)
+
+You can use mixed MID and Account in beneficiary, make sure all of them has the same currency as transaction currency.
 
 ```json
 [
@@ -39,31 +41,69 @@ Beneficiaries must be whitelisted before payouts can be made. Use the [Add Benef
 
 > Maximum 10 beneficiaries per request.
 
-### RSA Encryption (PHP)
+### RSA Encryption (PHP Sample Code)
 
 ```php
-$data_object = json_encode([
-    ['account' => '200030000', 'amount' => 100],
-    ['account' => '012538302', 'amount' => 200]
-]);
-$rsa_public_key = "RSA PUBLIC KEY PROVIDED BY ABA BANK";
-$maxlength = 117;
-$encrypted_output = '';
-while ($data_object !== '') {
-    $chunk = substr($data_object, 0, $maxlength);
-    $data_object = substr($data_object, $maxlength);
-    openssl_public_encrypt($chunk, $encrypted_chunk, $rsa_public_key);
-    $encrypted_output .= $encrypted_chunk;
+function opensslEncryption($source, $publicKey)
+{
+    //Assumes 1024 bit key and encrypts in chunks.
+    $maxlength = 117;
+    $output = '';
+    while ($source) {
+        $input = substr($source, 0, $maxlength);
+        $source = substr($source, $maxlength);
+        openssl_public_encrypt($input, $encrypted, $publicKey);
+        $output .= $encrypted;
+    }
+    return base64_encode($output);
 }
-$beneficiaries = base64_encode($encrypted_output);
+
+// You can use mixed MID and Account in beneficiary, make
+// sure all of them has the same currency as transaction currency.
+$beneficiaries_info = json_encode([
+    ['account' => '200030000', 'amount' => 100],
+    ['account' => '012538302', 'amount' => 200],
+]);
+
+$rsaPublicKey = 'USE YOUR RSA PUBLIC KEY PROVIDED BY ABA';
+
+$beneficiaries = opensslEncryption($beneficiaries_info, $rsaPublicKey);
 ```
 
-### Hash Generation
+### Custom Fields (PHP Sample Code)
 
 ```php
+$custom_fields = json_encode([
+   "Invoice_ID" => "INV-1234",
+   "Province" => "Phnom Penh"
+]);
+```
+
+### Hash Generation (PHP Sample Code)
+
+```php
+// public key provided by ABA Bank
 $api_key = "API KEY PROVIDED BY ABA BANK";
-$b4hash = $merchant_id . $tran_id . $beneficiaries . $amount . $custom_fields . $currency;
-$hash = base64_encode(hash_hmac('sha512', $b4hash, $api_key, true));
+
+// Prepare the data to be hashed
+$b4Hash = $merchant_id . $tran_id . $beneficiaries . $amount . $custom_fields . $currency;
+
+// Generate the HMAC hash using SHA-512 and encode it in Base64
+$hash = hash_hmac('sha512', $b4Hash, $api_key);
+```
+
+## Example Request
+
+```json
+{
+  "merchant_id": "EC0001",
+  "tran_id": "A17259584044451",
+  "beneficiaries": "ElKjECTZK7ym...NX0Dt2dz...",
+  "amount": 3.44,
+  "currency": "USD",
+  "custom_fields": "{\"timestamp\":\"2024-08-23 10:35:55.437\",\"traceId\":\"63f9645fa3bd8678907ed4c038357385\"}",
+  "hash": "3c70c551a...d1092f6e22228a7686c51bc1162a..."
+}
 ```
 
 ## Response

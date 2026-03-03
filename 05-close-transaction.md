@@ -1,6 +1,6 @@
 # Close Transaction API
 
-If your business involves transactions that may need cancellation—such as flash sales, hotel bookings, or ticket sales—you can use the Close Transaction API to cancel a transaction. Once a transaction is closed, its payment status is updated to **CANCELLED**. This means the payment will either be rejected or reversed, and no payment notification (callback) will be sent to the merchant.
+If your business involves transactions that may need cancellation—such as flash sales, hotel bookings, or ticket sales—you can use the **Close Transaction API** to cancel a transaction. Once a transaction is closed, its payment status is updated to **CANCELLED**. This means the payment will either be rejected or reversed, and no payment notification (callback) will be sent to the merchant.
 
 ## Endpoint
 
@@ -23,9 +23,16 @@ POST /api/payment-gateway/v1/payments/close-transaction
 
 ## Hash Generation
 
+**PHP Sample Code**
+
 ```php
+// public key provided by ABA Bank
 $api_key = "API KEY PROVIDED BY ABA BANK";
+
+// Prepare the data to be hashed
 $b4hash = $req_time . $merchant_id . $tran_id;
+
+// Generate the HMAC hash using SHA-512 and encode it in Base64
 $hash = base64_encode(hash_hmac('sha512', $b4hash, $api_key, true));
 ```
 
@@ -67,11 +74,13 @@ Exception response:
 }
 ```
 
+### `status` Object
+
 | Field | Type | Description |
 |-------|------|-------------|
-| `status.code` | string | Response code of the request |
-| `status.message` | string | Please see the property response `code` for the details |
-| `status.tran_id` | string | Purchase transaction id that has been cancelled |
+| `code` | string | Response code of the request |
+| `message` | string | Please see the property response `code` for the details |
+| `tran_id` | string | Purchase transaction id that has been cancelled |
 
 ## Status Codes
 

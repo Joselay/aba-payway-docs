@@ -4,7 +4,8 @@ This API allows you to retrieve details of a purchase transaction, including its
 
 > **Note:** This API does not support real-time payment status checks during payment processing.
 
-You can retrieve details for any past transaction.
+- You can retrieve details for any past transaction.
+- Limited to 10 requests per minute. This limit cannot be increased.
 
 ## Endpoint
 
@@ -29,9 +30,16 @@ POST /api/payment-gateway/v1/payments/transaction-detail
 
 ## Hash Generation
 
+**PHP Sample Code**
+
 ```php
+// public key provided by ABA Bank
 $api_key = "API KEY PROVIDED BY ABA BANK";
+
+// Prepare the data to be hashed
 $b4hash = $req_time . $merchant_id . $tran_id;
+
+// Generate the HMAC hash using SHA-512 and encode it in Base64
 $hash = base64_encode(hash_hmac('sha512', $b4hash, $api_key, true));
 ```
 

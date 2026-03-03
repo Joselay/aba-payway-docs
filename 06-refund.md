@@ -41,31 +41,50 @@ POST /api/merchant-portal/merchant-access/online-transaction/refund
 ### RSA Encryption (PHP)
 
 ```php
+// Prepare data to be encrypted
 $data_object = json_encode([
-    'mc_id' => $merchant_id,
+    'mc_id' => $merchant_id, // same value as merchant_id
     'tran_id' => $tran_id,
     'refund_amount' => $amount
 ]);
+
+// RSA public key provided by the bank
 $rsa_public_key = "RSA PUBLIC KEY PROVIDED BY ABA BANK";
+
+// Maximum length for encryption chunks
 $maxlength = 117;
+
+// Initialize output for encrypted data
 $encrypted_output = '';
+
+// Encrypt data in chunks
 while ($data_object !== '') {
+    // Extract a substring of the allowed maximum length
     $chunk = substr($data_object, 0, $maxlength);
     $data_object = substr($data_object, $maxlength);
+    // Encrypt the chunk using the public key
     if (openssl_public_encrypt($chunk, $encrypted_chunk, $rsa_public_key)) {
         $encrypted_output .= $encrypted_chunk;
     } else {
+        // Handle encryption failure
         throw new Exception('Encryption failed for a data chunk.');
     }
 }
+
+// Encode the concatenated encrypted output in Base64
 $merchant_auth = base64_encode($encrypted_output);
 ```
 
 ### Hash Generation
 
 ```php
+// public key provided by ABA Bank
 $api_key = "API KEY PROVIDED BY ABA BANK";
+
+// Prepare the data to be hashed
 $b4hash = $request_time . $merchant_id . $merchant_auth;
+
+// Generate the HMAC hash using SHA-512 and encode it in Base64
 $hash = base64_encode(hash_hmac('sha512', $b4hash, $api_key, true));
 ```
 

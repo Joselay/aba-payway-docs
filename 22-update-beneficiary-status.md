@@ -34,9 +34,55 @@ POST /api/merchant-portal/merchant-access/whitelist-account/update-whitelist-sta
 | `payee` | string | Yes | Beneficiary identifier: It can be either a MID or an ABA account |
 | `status` | integer | Yes | To disable the beneficiary, set the value to `0`. To activate the beneficiary, set the value to `1`. |
 
-### RSA Encryption
+### RSA Encryption (PHP Sample Code)
 
-The `merchant_auth` JSON object must be encrypted using the RSA public key provided by ABA Bank. Data is encrypted in 117-byte chunks, then concatenated and Base64-encoded.
+```php
+// Prepare data to be encrypted
+$data_object = json_encode([
+     'mc_id' => 'ec000002',
+      'payee' => '318111358120004',
+      'status' => 0
+]);
+
+// RSA public key provided by the bank
+$rsa_public_key = "RSA PUBLIC KEY PROVIDED BY ABA BANK";
+
+// Maximum length for encryption chunks
+$maxlength = 117;
+
+// Initialize output for encrypted data
+$encrypted_output = '';
+
+// Encrypt data in chunks
+while ($data_object !== '') {
+     // Extract a substring of the allowed maximum length
+     $chunk = substr($data_object, 0, $maxlength);
+     $data_object = substr($data_object, $maxlength);
+     // Encrypt the chunk using the public key
+     if (openssl_public_encrypt($chunk, $encrypted_chunk, $rsa_public_key)) {
+          $encrypted_output .= $encrypted_chunk;
+     } else {
+          // Handle encryption failure (optional: log the error or throw an exception)
+          throw new Exception('Encryption failed for a data chunk.');
+      }
+}
+
+// Encode the concatenated encrypted output in Base64
+$merchant_auth = base64_encode($encrypted_output);
+```
+
+### Hash Generation (PHP Sample Code)
+
+```php
+// public key provided by ABA Bank
+$api_key = "API KEY PROVIDED BY ABA BANK";
+
+// Prepare the data to be hashed
+$b4hash = $request_time . $merchant_auth;
+
+// Generate the HMAC hash using SHA-512 and encode it in Base64
+$hash = base64_encode(hash_hmac('sha512', $b4hash, $api_key, true));
+```
 
 ## Example Request
 
@@ -47,14 +93,6 @@ The `merchant_auth` JSON object must be encrypted using the RSA public key provi
   "merchant_auth": "39aaa43.....0c00a",
   "hash": "EVDFA2118UD0boKhkAcOb...+5KCCt+sWw=="
 }
-```
-
-## Hash Generation
-
-```php
-$api_key = "API KEY PROVIDED BY ABA BANK";
-$b4hash = $request_time . $merchant_auth;
-$hash = base64_encode(hash_hmac('sha512', $b4hash, $api_key, true));
 ```
 
 ## Response
@@ -72,7 +110,7 @@ $hash = base64_encode(hash_hmac('sha512', $b4hash, $api_key, true));
 | `status` | integer | — | The current status of the beneficiary. `1` = Active, `0` = Inactive |
 | `created_at` | string | — | Date and time that the beneficiary was created or added to the list |
 
-### Example Response
+### Example Success Response
 
 ```json
 {

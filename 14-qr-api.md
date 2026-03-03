@@ -1,7 +1,5 @@
 # QR API
 
-OpenAPI Specification
-
 Supported payment options:
 - Transaction currency KHR: ABA PAY, KHQR
 - Transaction currency USD: ABA PAY, KHQR, WeChat and Alipay
@@ -47,61 +45,88 @@ POST /api/payment-gateway/v1/payments/generate-qr
 >
 > `req_time, merchant_id, tran_id, amount, items, first_name, last_name, email, phone, purchase_type, payment_option, callback_url, return_deeplink, currency, custom_fields, return_params, payout, lifetime, qr_image_template`
 
+**PHP Sample Code**
+
 ```php
-$api_key = "API KEY PROVIDED BY ABA BANK";
-$b4hash = $req_time . $merchant_id . $tran_id . $amount . $items . $first_name . $last_name . $email . $phone . $purchase_type . $payment_option . $callback_url . $return_deeplink . $currency . $custom_fields . $return_params . $payout . $lifetime . $qr_image_template;
+$api_key = 'API KEY PROVIDED BY ABA BANK';
+
+$b4hash = $req_time . $merchant_id . $tran_id . $amount .
+$items . $first_name . $last_name . $email . $phone . $purchase_type .
+$payment_option . $callback_url . $return_deeplink . $currency .
+$custom_fields . $return_params . $payout . $lifetime .
+$qr_image_template;
+
 $hash = base64_encode(hash_hmac('sha512', $b4hash, $api_key, true));
 ```
 
-## Field Format Examples
+## Field Encoding Examples
 
-**items** (Base64-encoded JSON):
-```json
-[
-  {"name": "Item 1", "quantity": "1", "price": "0.01"},
-  {"name": "Item 2", "quantity": "1", "price": "0.02"}
-]
+### Items (Base64-encoded JSON)
+
+```php
+$items = base64_encode('[
+    {"name":"Item 1","quantity":1,"price":1.00},
+    {"name":"Item 2","quantity":1,"price":4.00}
+]');
 ```
 
-**payout** (Base64-encoded JSON):
-```json
-[
-  {"account": "003811397", "amount": "1.00", "tran_id": "payout_trx_001"}
-]
+### Callback URL (Base64-encoded)
+
+```php
+$callback_url = base64_encode('YOUR CALL BACK URL');
 ```
 
-**return_deeplink** (Base64-encoded JSON):
-```json
-{"android_scheme": "payway://pay", "ios_scheme": "payway://pay"}
+### Return Deeplink (Base64-encoded JSON)
+
+```php
+$return_deeplink = base64_encode('{"android_scheme": "{YOUR ANDROID SCHEME}", "ios_scheme":"{YOUR IOS SCHEME}"}');
 ```
 
-**custom_fields** (Base64-encoded JSON):
-```json
-{"key1": "value1", "key2": "value2"}
+### Custom Fields (Base64-encoded JSON)
+
+```php
+$custom_fields = base64_encode('{"Province":"ABC", "Province": "Male" }');
 ```
 
-**callback_url** (Base64-encoded): The URL that receives payment notifications.
+### Return Params (JSON)
 
-**return_params**: Additional information to include in the pushback once the payment is completed (JSON object).
+```php
+$return_params = '{"key_1": "Value 1","key_2": "Value 2"}';
+```
+
+### Payout (Base64-encoded JSON)
+
+```php
+$payout = base64_encode('[
+    {"account":"201030101","amount":1.72},
+    {"account":"012538302","amount":1.72}
+]');
+```
 
 ## Request Example
 
 ```json
 {
-  "hash": "base64-encoded-hmac-sha512-hash",
-  "req_time": "20250301120000",
-  "merchant_id": "your_merchant_id",
-  "tran_id": "trx-20250301-001",
-  "amount": 1.00,
-  "currency": "USD",
-  "payment_option": "abapay_khqr",
-  "lifetime": 30,
-  "qr_image_template": "qr_template1",
-  "first_name": "John",
-  "last_name": "Doe",
-  "email": "john@example.com",
+  "req_time": "20250312095439",
+  "merchant_id": "keng.dara.online",
+  "tran_id": "20250311033231",
+  "first_name": "ABA",
+  "last_name": "Bank",
+  "email": "aba.bank@gmail.com",
   "phone": "012345678",
-  "items": "base64-encoded-items-json"
+  "amount": 0.01,
+  "purchase_type": "purchase",
+  "payment_option": "abapay_khqr",
+  "items": "W3sibmFtZSI6IicgVU5JT04gU0VMRUNUIG51bGwsIHZlcnNpb24oKSwgbnVsbCAtLSIsInF1YW50aXR5IjozLCJwcmljZSI6MTAwLjAxfV0=",
+  "currency": "USD",
+  "callback_url": "aHR0cHM6Ly9hcGkuY2FsbGJhY2suY29tL25vdGlmeQ==",
+  "return_deeplink": null,
+  "custom_fields": null,
+  "return_params": null,
+  "payout": null,
+  "lifetime": 6,
+  "qr_image_template": "template3_color",
+  "hash": "ZyDmMe/kznbY2e...ZB6tMnqv57V06T13du8807dcbPTg=="
 }
 ```
 
@@ -113,7 +138,7 @@ $hash = base64_encode(hash_hmac('sha512', $b4hash, $api_key, true));
 |-------|------|-------------|
 | `status.code` | string | Response code |
 | `status.message` | string | Descriptive message |
-| `status.trace_id` | string | Unique request trace identifier |
+| `status.trace_id` | string | A unique identifier assigned to a request to help track its journey through a system |
 | `amount` | number | Transaction amount |
 | `currency` | string | Transaction currency |
 | `qrString` | string | QR content as string |
@@ -121,6 +146,8 @@ $hash = base64_encode(hash_hmac('sha512', $b4hash, $api_key, true));
 | `abapay_deeplink` | string | ABA Mobile Deeplink. You can use this deeplink to automatically open ABA Mobile so that customer can confirm payment |
 | `app_store` | string | If you try to open `abapay_deeplink` and the payer does not have ABA Mobile installed, you can redirect the user to the app store to download ABA Mobile |
 | `play_store` | string | If you try to open `abapay_deeplink` and the payer does not have ABA Mobile installed, you can redirect the user to the play store to download ABA Mobile |
+
+### Success Response
 
 ```json
 {

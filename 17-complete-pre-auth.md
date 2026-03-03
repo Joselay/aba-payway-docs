@@ -24,7 +24,7 @@ POST /api/merchant-portal/merchant-access/online-transaction/pre-auth-completion
 |-------|------|-----------|----------|-------------|
 | `request_time` | string | — | Yes | Request date and time in UTC format as `YYYYMMDDHHmmss`. |
 | `merchant_id` | string | 20 | Yes | A unique merchant key provided by ABA Bank. |
-| `merchant_auth` | string | — | Yes | The JSON-encoded object contains the fields `mc_id`, `tran_id`, and `complete_amount`, which are encrypted using RSA public key encryption in chunks. |
+| `merchant_auth` | string | — | Yes | The JSON-encoded object contains the fields `mc_id`, `tran_id`, and `complete_amount`, which are encrypted using RSA public key encryption in chunks. The encrypted data is then concatenated and encoded in Base64 format. |
 | `hash` | string | — | Yes | Base64-encoded HMAC-SHA512 hash of concatenated values: `merchant_auth`, `request_time`, and `merchant_id` with `public_key`. |
 
 ### `merchant_auth` Object (before encryption)
@@ -34,6 +34,67 @@ POST /api/merchant-portal/merchant-access/online-transaction/pre-auth-completion
 | `mc_id` | string | Yes | A unique merchant key which provided by ABA Bank. Same value as `merchant_id`. |
 | `tran_id` | string | Yes | Pre-auth purcahse transaction id to complete. |
 | `complete_amount` | decimal | Yes | Amount to complete. |
+
+### RSA Encryption (PHP Sample Code)
+
+```php
+// Prepare data to be encrypted for complete pre auth
+$data_object = json_encode([
+    'mc_id' => $merchant_id,
+    'tran_id' => $tran_id,
+    'complete_amount' => $complete_amount
+]);
+
+// RSA public key provided by the bank
+$rsa_public_key = "RSA PUBLIC KEY PROVIDED BY ABA BANK";
+
+// Maximum length for encryption chunks
+$maxlength = 117;
+
+// Initialize output for encrypted data
+$encrypted_output = '';
+
+// Encrypt data in chunks
+while ($data_object !== '') {
+    // Extract a substring of the allowed maximum length
+    $chunk = substr($data_object, 0, $maxlength);
+    $data_object = substr($data_object, $maxlength);
+    // Encrypt the chunk using the public key
+    if (openssl_public_encrypt($chunk, $encrypted_chunk, $rsa_public_key)) {
+        $encrypted_output .= $encrypted_chunk;
+    } else {
+        // Handle encryption failure (optional: log the error or throw an exception)
+        throw new Exception('Encryption failed for a data chunk.');
+    }
+}
+
+// Encode the concatenated encrypted output in Base64
+$merchant_auth = base64_encode($encrypted_output);
+```
+
+### Hash Generation (PHP Sample Code)
+
+```php
+// public key provided by ABA Bank
+$api_key = "API KEY PROVIDED BY ABA BANK";
+
+// Prepare the data to be hashed
+$b4hash = $merchant_auth . $request_time . $merchant_id;
+
+// Generate the HMAC hash using SHA-512 and encode it in Base64
+$hash = base64_encode(hash_hmac('sha512', $b4hash, $api_key, true));
+```
+
+## Example Request
+
+```json
+{
+  "request_time": "20200728093403",
+  "merchant_id": "ec000002",
+  "merchant_auth": "b1453eac8cd686f90542c9d7dc026a3f70678afd",
+  "hash": "wR2bVPVKY9M4WmeGoQUUcmtrJYFofFuMrgTMBLj/g8kPfXgnpK/qpjptO+1D0nKbpFktqM/iPWEyQ6/llsnJbw=="
+}
+```
 
 ## Response
 
@@ -46,6 +107,20 @@ POST /api/merchant-portal/merchant-access/online-transaction/pre-auth-completion
 | `transaction_status` | string | Transaction status. Once successfully completed, the status will be `COMPLETED` |
 | `status.code` | string | Response code |
 | `status.message` | string | Descriptive message |
+
+### Example Success Response
+
+```json
+{
+  "grand_total": 100.00,
+  "currency": "USD",
+  "transaction_status": "COMPLETED",
+  "status": {
+    "code": "00",
+    "message": "Transaction successful"
+  }
+}
+```
 
 ## Status Codes
 

@@ -37,11 +37,39 @@ POST /api/payment-gateway/v1/payments/purchase
 
 > *Both `ctid` and `pwt` are nullable but must be provided for token-based purchases.
 
+### Items Encoding (PHP)
+
+```php
+$item = base64_encode(json_encode([
+    ["name" => "product 1","quantity" => 1,"price" => 1.00],
+    ["name" => "product 2","quantity" => 2, "price" => 4.00]
+]));
+```
+
+> This is for description purposes only. The price or quantity in this information will not be used for calculations or validation.
+
+### Payout Encoding (PHP)
+
+```php
+$payout = base64_encode(json_encode([
+    ["acc" => "000133879","amt"=> 1],
+    ["acc" => "000133880","amt" => 1]
+]));
+```
+
 ## Hash Generation
 
 ```php
+// public key provided by ABA Bank
 $api_key = "API KEY PROVIDED BY ABA BANK";
-$b4hash = $req_time . $merchant_id . $tran_id . $amount . $items . $shipping . $ctid . $pwt . $firstname . $lastname . $email . $phone . $type . $return_url . $currency . $custom_fields . $return_params . $payout;
+
+// Prepare the data to be hashed
+$b4hash = $req_time . $merchant_id . $tran_id . $amount .
+$items . $shipping . $ctid . $pwt . $firstname . $lastname .
+$email . $phone . $type  . $return_url . $currency .
+$custom_fields . $return_params . $payout;
+
+// Generate the HMAC hash using SHA-512 and encode it in Base64
 $hash = base64_encode(hash_hmac('sha512', $b4hash, $api_key, true));
 ```
 
@@ -67,7 +95,9 @@ $hash = base64_encode(hash_hmac('sha512', $b4hash, $api_key, true));
 }
 ```
 
-## Success Response
+## Response
+
+### Success Response
 
 **HTTP 200**
 
@@ -83,7 +113,28 @@ $hash = base64_encode(hash_hmac('sha512', $b4hash, $api_key, true));
 }
 ```
 
-## Error Response
+| Field | Type | Description |
+|-------|------|-------------|
+| `tran_id` | string | Your unique transaction id |
+| `payment_status.status` | string | `0` represent success payment |
+| `payment_status.code` | string | Code `CDA00` for success payment |
+| `payment_status.description` | string | Please see the property response `code` for the details |
+| `payment_status.pw_tran_id` | string | Your unique transaction id |
+
+### Exception Response
+
+**HTTP 200**
+
+```json
+{
+  "status": {
+    "code": 26,
+    "message": "Invalid Merchant Profile."
+  }
+}
+```
+
+### Error Response
 
 **HTTP 403**
 

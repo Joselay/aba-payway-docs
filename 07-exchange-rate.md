@@ -23,8 +23,13 @@ POST /api/payment-gateway/v1/exchange-rate
 ## Hash Generation
 
 ```php
+// public key provided by ABA Bank
 $api_key = "API KEY PROVIDED BY ABA BANK";
+
+// Prepare the data to be hashed
 $b4hash = $req_time . $merchant_id;
+
+// Generate the HMAC hash using SHA-512 and encode it in Base64
 $hash = base64_encode(hash_hmac('sha512', $b4hash, $api_key, true));
 ```
 

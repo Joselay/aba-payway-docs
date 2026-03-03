@@ -30,16 +30,23 @@ POST /api/payment-gateway/v1/payments/transaction-list-2
 | `to_date` | string | No | End date for filtering transactions, in the format `YYYY-MM-DD HH:mm:ss`. Default value is today at `23:59:59` |
 | `from_amount` | number | No | Search transaction that has purchased amount from |
 | `to_amount` | number | No | Search transaction that has purchased amount to |
-| `status` | string | No | Possible values: `APPROVED`, `PRE-AUTH`, `REFUNDED`, `PENDING`, `DECLINED`, `CANCELLED` |
+| `status` | string | No | Possible values: `APPROVED`, `PRE-AUTH`, `REFUNDED`, `PENDING`, `DECLINED`, `CANCELLED`. No case sensitive, if you want to query multiple values please separate value by comma |
 | `page` | string | No | Current page index. Default value: `1` |
 | `pagination` | string | No | Total number of records per page. Default value `40`, maximum value is `1000` |
 | `hash` | string | Yes | Base64 encode of hash hmac sha512 encryption of concatenates values `req_time`, `merchant_id`, `from_date`, `to_date`, `from_amount`, `to_amount`, `status`, `page`, and `pagination` with `public_key` |
 
 ## Hash Generation
 
+**PHP Sample Code**
+
 ```php
+// public key provided by ABA Bank
 $api_key = "API KEY PROVIDED BY ABA BANK";
+
+// Prepare the data to be hashed
 $b4hash = $req_time . $merchant_id . $from_date . $to_date . $from_amount . $to_amount . $status . $page . $pagination;
+
+// Generate the HMAC hash using SHA-512 and encode it in Base64
 $hash = base64_encode(hash_hmac('sha512', $b4hash, $api_key, true));
 ```
 
@@ -125,7 +132,7 @@ Exception response:
 | `payment_status` | string | `APPROVED` – Transaction successfully completed with the full purchase amount, `PRE-AUTH` – Transaction successfully processed with a pre-authorization hold on funds pending final capture, `REFUNDED` – Transaction has been fully or partially refunded, `PENDING` – Transaction is awaiting payment completion by the payer, `DECLINED` – Transaction has been declined, `CANCELLED` – Merchant canceled the pre-authorization or closed the transaction |
 | `payment_status_code` | integer | `0` = APPROVED/PRE-AUTH, `2` = PENDING, `3` = DECLINED, `4` = REFUNDED, `7` = CANCELLED |
 | `original_amount` | number | Original amount of the transaction (before discount) |
-| `original_currency` | string | Original transaction currency |
+| `original_currency` | string | Original transaction currency. `KHR` for Khmer Riel transaction, `USD` for US Dollar transaction |
 | `total_amount` | number | Amount to pay after discount. Its currency follow original currency |
 | `discount_amount` | number | Discounted amount. Its currency follow original currency |
 | `refund_amount` | number | Total refunded amount |
@@ -138,15 +145,23 @@ Exception response:
 | `bank_ref` | string | Unique booking entry id from ABA core banking. This value only exist in the API response if configure on profile |
 | `payer_account` | string | Masked ABA Account Number or Masked Card PAN. For other payment options, it will be blank |
 | `bank_name` | string | If payment is made with ABA Pay, it will show ABA Bank or if payment made using KHQR it will show issuer bank name |
-| `card_source` | string | `ONUS` – Transaction made with ABA Card, `OFFUS_DOMESTIC` – Transaction made with local card issue by other banks, `OFFUS_INTERNATIONAL` – Transaction made with international card |
-| `payment_type` | string | `N/A` – Those pending for payment, `ABA Pay` – Transaction made with ABA Account (ABA Mobile), `Alipay` – Transaction made with Alipay, `Wechat` – Transaction made with WeChat Pay, `KHQR` – Transaction made with KHQR, `VISA` – Transaction made with Visa card, `MC` – Transaction made with Mastercard, `JCB` – Transaction made with JCB card, `CUP` – Transaction made with UPI card |
+| `card_source` | string | Only for payment with card: `ONUS` – Transaction made with ABA Card, `OFFUS_DOMESTIC` – Transaction made with local card issue by other banks, `OFFUS_INTERNATIONAL` – Transaction made with international card |
+| `payment_type` | string | Payment method that the customer use to make payment. This value only exist in the API response if configure on profile. Possible values: `N/A` (those pending for payment), `ABA Pay` (Transaction made with ABA Account/ABA Mobile), `Alipay` (Transaction made with Alipay), `Wechat` (Transaction made with WeChat Pay), `KHQR` (Transaction made with KHQR), `VISA` (Transaction made with Visa card), `MC` (Transaction made with Mastercard), `JCB` (Transaction made with JCB card), `CUP` (Transaction made with UPI card) |
 
 ### Pagination Fields
 
 | Field | Type | Description |
 |-------|------|-------------|
 | `page` | string | Current page index |
-| `pagination` | string | Records per page |
+| `pagination` | string | Total number of records per page. Default: `40` and maximum of `1000` |
+
+### `status` Object
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `code` | string | Response code. See status codes below |
+| `message` | string | Please see the property response `code` for the details |
+| `tran_id` | string | Request reference generated by payment gateway |
 
 ## Status Codes
 
@@ -154,6 +169,6 @@ Exception response:
 |------|-------------|
 | `00` | Success! |
 | `1` | Wrong hash |
-| `8` | Invalid Merchant Profile |
+| `8` | Invalid merchant profile |
 | `11` | Internal server error |
 | `429` | Rate limit exceeded |

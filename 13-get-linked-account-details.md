@@ -1,6 +1,8 @@
-# Get Linked Account Details API
+# Get Linked Account Details
 
-If you encounter issues with the pushback notification and do not receive the details, you can manually retrieve the linked account information. This API only works for retrieving **account tokens**. It is not applicable for card tokens.
+If you encounter issues with the pushback notification and do not receive the details, you can manually retrieve the linked account information.
+
+> **Note:** This API only works for retrieving **account tokens**. It is not applicable for card tokens.
 
 ## Endpoint
 
@@ -34,15 +36,49 @@ POST /api/aof/pushback-status
 
 ## Hash Generation
 
+**PHP Sample Code**
+
 ```php
+// public key provided by ABA Bank
 $api_key = "API KEY PROVIDED BY ABA BANK";
-$b4hash = $merchant_id . $req_time . $return_param;
+
+// Prepare the data to be hashed
+$b4hash =  $merchant_id . $req_time . $return_param;
+
+// Generate the HMAC hash using SHA-512 and encode it in Base64
 $hash = base64_encode(hash_hmac('sha512', $b4hash, $api_key, true));
 ```
 
 ## Response
 
-**HTTP 200**
+### Success Response
+
+```json
+{
+  "data": {
+    "ctid": "43182acf04eac...7c7066acf260e",
+    "pwt": "4318232588e6...3603b18af4d1cdb2d846d1f58",
+    "mask_account": "*****3457",
+    "expired_in": 1697343224
+  },
+  "status": {
+    "code": "00",
+    "message": "Success!",
+    "tran_id": "43242423443"
+  }
+}
+```
+
+### Exception Response
+
+```json
+{
+  "status": {
+    "code": "04",
+    "message": "Parameter Validation Required"
+  }
+}
+```
 
 ### `data` Object
 

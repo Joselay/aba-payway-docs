@@ -22,7 +22,7 @@ Before using this API, please ensure that your profile has the Card on File feat
 |-------|------|----------|-------------|
 | `merchant_id` | string | Yes | A unique merchant key which provided by ABA Bank |
 | `ctid` | string | No | Your consumer identification number |
-| `return_param` | string | Yes | Extra information that you want to include when payment gateway calls your `return_url` |
+| `return_param` | string | Yes | Extra information that you want to include when payment gateway call your `return_url` |
 | `firstname` | string | No | Your consumer first name |
 | `lastname` | string | No | Your consumer last name |
 | `email` | string | No | Your consumer email |
@@ -34,9 +34,65 @@ Before using this API, please ensure that your profile has the Card on File feat
 ## Hash Generation
 
 ```php
+// public key provided by ABA Bank
 $api_key = "API KEY PROVIDED BY ABA BANK";
+
+// Prepare the data to be hashed
 $b4hash = $merchant_id . $ctid . $return_param;
+
+// Generate the HMAC hash using SHA-512 and encode it in Base64
 $hash = base64_encode(hash_hmac('sha512', $b4hash, $api_key, true));
+```
+
+## HTML Implementation Sample
+
+```html
+<!doctype html>
+<html lang="en">
+   <head>
+      <meta charset="utf-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge">
+      <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+      <meta name="description" content="">
+      <meta name="author" content="PayWay">
+      <title>PayWay Add Card Sample</title>
+
+      <link rel="stylesheet" href="{payway based url}/checkout-popup.html?file=css"/>
+      <style type="text/css">
+         /* Your css style*/
+      </style>
+
+      <script src="{payway based url}/checkout-popup.html?file=js"></script>
+      <script>
+        $(document).ready(function () {
+        $('#add_card_button').click(function () {
+        AbaPayway.addCard();
+        });
+      });
+      </script>
+   </head>
+   <body>
+      <div class="container">
+        <a href="#" id="add_card_button" class="btn btn-primary add-to-card">Add New Card</a>
+      </div>
+      <!-- The Modal -->
+      <div id="aba_main_modal" class="aba-modal">
+         <!-- Modal content -->
+         <div class="aba-modal-content add-card">
+            <form method="POST" target="aba_webservice" id="aba_merchant_add_card"  action="{payway based url}/api/payment-gateway/v1/cof/initial?lang=en">
+              <input type="hidden" name="firstname" value="Samnang"/>
+              <input type="hidden" name="lastname" value="Sok"/>
+              <input type="hidden" name="phone" value="0123456789"/>
+              <input type="hidden" name="email" value="sok.samnang@gmail.com"/>
+              <input type="hidden" name="ctid" value="239acf04eace99ea1590857c7066acf260e"/>
+              <input type="hidden" name="merchant_id" value="###"/>
+              <input type="hidden" name="return_param" value="rp-1582083583"/>
+              <input type="hidden" name="hash" value="###"/>
+            </form>
+         </div>
+      </div>
+   </body>
+</html>
 ```
 
 ## Response

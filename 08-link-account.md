@@ -1,6 +1,6 @@
 # Link Account API
 
-The API returns a QR code or an ABA Mobile deeplink, enabling users to either scan the QR code or use the deeplink to automatically launch the ABA Mobile app and prompts the customer to select an ABA account to link to your platform. Once the user finishes linking, PayWay will send pushback account details and token to the merchant through the `return_url`.
+The API returns a QR code or an ABA Mobile deeplink, enabling users to either scan the QR code or use the deeplink to automatically launches the ABA Mobile app and prompts the customer to select an ABA account to link to your platform. Once the user finished linking, PayWay will send pushback account details and token to the merchant through the `return_url`.
 
 ## Endpoint
 
@@ -22,7 +22,7 @@ Before using this API, please make sure your profile has enabled Account on File
 |-------|------|-----------|----------|-------------|
 | `req_time` | string | — | Yes | Request date and time in UTC format as `YYYYMMDDHHmmss` |
 | `merchant_id` | string | 20 | Yes | A unique merchant key which provided by ABA Bank |
-| `return_param` | string | — | Yes | Extra information that you want to include when payment gateway calls your `return_url` |
+| `return_param` | string | — | Yes | Extra information that you want to include when payment gateway call your `return_url` |
 | `return_url` | string | — | No | Once the user has linked their account, the details of the token and other important information will be sent via this URL. This is an optional field. If left empty, it will default to the merchant profile's `pushback_url`. If you provide a value, ensure that your domain is whitelisted in your merchant profile |
 | `return_deeplink` | string | — | No | After the user links their account on ABA Mobile, they will see a success screen with a **Done** button. Your return deep link will be embedded in this button. When the user taps **Done**, they will be redirected to your app |
 | `hash` | string | — | Yes | Base64-encoded HMAC-SHA512 hash of the concatenated values: `merchant_id`, `req_time`, and `return_deeplink`, using the `public_key` |

@@ -36,13 +36,22 @@ POST /api/aof/remove-account
 
 ## Hash Computation
 
+**PHP Sample Code**
+
 ```php
+// public key provided by ABA Bank
 $api_key = "API KEY PROVIDED BY ABA BANK";
-$b4hash = $merchant_id . $req_time . $ctid . $pwt;
+
+// Prepare the data to be hashed
+$b4hash =  $merchant_id . $req_time . $ctid . $pwt;
+
+// Generate the HMAC hash using SHA-512 and encode it in Base64
 $hash = base64_encode(hash_hmac('sha512', $b4hash, $api_key, true));
 ```
 
 ## Response
+
+### Success Response
 
 ```json
 {
@@ -52,6 +61,24 @@ $hash = base64_encode(hash_hmac('sha512', $b4hash, $api_key, true));
   }
 }
 ```
+
+### Exception Response
+
+```json
+{
+  "status": {
+    "code": "29",
+    "message": "Invalid ctid or pwt value"
+  }
+}
+```
+
+### `status` Object
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `code` | string | Response code. See status codes below |
+| `message` | string | Please see more details on the property `code` above |
 
 ## Status Codes
 

@@ -2,27 +2,30 @@
 
 ## Introduction
 
-ABA PayWay provides a comprehensive platform for integrating secure online payment solutions in Cambodia. The service supports multiple payment methods including ABA KHQR, credit/debit cards (Visa, Mastercard, JCB, UPI), WeChat Pay, Alipay, and Google Pay.
+ABA PayWay provides a comprehensive platform for integrating secure online payment solutions in Cambodia. Accept payments for your business with PayWay's simple and flexible payment methods including ABA KHQR, credit/debit cards (Visa, Mastercard, JCB, UPI), WeChat Pay, Alipay, and Google Pay.
 
 ## Core Capabilities
 
 ### Accept Payments
-- Accept online payments on website and mobile app
-- Supported methods: ABA KHQR, cards, WeChat Pay, Alipay, Google Pay
-- Dynamic QR code display for customer payments
-- API-generated payment links for faster collection
+Accept online payments on website and mobile app with multiple payment methods:
+- Supported methods: ABA KHQR, credit/debit cards, WeChat Pay, and Alipay
+- Dynamic QR code generation for display or printing across various systems
+- API-based payment link creation and distribution for faster collection
 
-### Auto-payments (Credentials on File)
-- Automatic subscription billing using stored customer details
-- Card and ABA account tokenization
-- On-demand charging with saved payment methods
+### Auto-Payments (Credentials on File)
+Collect payment automatically by storing your customers' ABA accounts or card details for future use:
+- Automatic subscription billing using stored payment information
+- Customer account and card storage functionality
+- On-demand charging with previously saved payment methods
 
 ### Hold Payments (Pre-Auth)
-- Temporary fund holds with deferred charging
+Temporarily hold customers' funds and release them later to ensure flexible and secure transactions:
+- Payment holding with deferred charging upon service completion
 - Hold-settle-payout workflows distributing funds to multiple stakeholders
 
-### Multi-party Payouts
-- Direct beneficiary payments on demand
+### Multi-Party Payouts
+Automatically split and distribute payments to multiple accounts in real-time:
+- Real-time beneficiary payments on demand
 - Automatic payment splitting among multiple recipients
 
 ## Environments
