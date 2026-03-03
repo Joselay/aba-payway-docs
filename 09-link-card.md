@@ -1,6 +1,6 @@
 # Link Card API
 
-Links a customer's credit/debit card (Visa, Mastercard, JCB, UPI) for future payments. Returns HTML content containing a card entry form. A $0.01 verification charge is processed and immediately refunded.
+The API returns HTML, allowing users to enter their credit/debit card details (Visa, Mastercard, JCB, and UPI) to link their card to your platform. Once the user has completed the linking process, PayWay will send the account details and token to the merchant via the `return_url`.
 
 ## Endpoint
 
@@ -14,22 +14,22 @@ POST /api/payment-gateway/v1/cof/initial
 
 ## Prerequisites
 
-Card on File must be enabled on your merchant profile. Contact `digitalsupport@ababank.com` (sandbox) or `paywaysales@ababank.com` (production).
+Before using this API, please ensure that your profile has the Card on File feature enabled. If your merchant profile has not enabled this feature yet, please contact our merchant digital support at `digitalsupport@ababank.com` for a sandbox profile. For a production merchant profile, please contact our merchant acquisition team at `paywaysales@ababank.com`.
 
 ## Request Parameters
 
 | Field | Type | Required | Description |
 |-------|------|----------|-------------|
-| `merchant_id` | string | Yes | Unique merchant identifier from ABA Bank |
-| `ctid` | string | No | Consumer identification number |
-| `return_param` | string | Yes | Supplementary data included in callback |
-| `firstname` | string | No | Consumer's first name |
-| `lastname` | string | No | Consumer's last name |
-| `email` | string | No | Consumer's email address |
-| `phone` | string | No | Consumer's phone number |
-| `return_url` | string | No | URL receiving token/details post-linking; defaults to merchant `pushback_url`. Domain must be whitelisted |
-| `continue_add_card_success_url` | string | No | Redirect URL after success screen confirmation |
-| `hash` | string | Yes | Base64-encoded HMAC-SHA512 hash |
+| `merchant_id` | string | Yes | A unique merchant key which provided by ABA Bank |
+| `ctid` | string | Yes | Your consumer identification number |
+| `return_param` | string | Yes | Extra information that you want to include when payment gateway calls your `return_url` |
+| `firstname` | string | No | Your consumer first name |
+| `lastname` | string | No | Your consumer last name |
+| `email` | string | No | Your consumer email |
+| `phone` | string | No | Your consumer phone |
+| `return_url` | string | No | Once the user has linked their card, the details of the token and other important information will be sent via this URL. This is an optional field. If left empty, it will default to the merchant profile's `pushback_url`. If you provide a value, ensure that your domain is whitelisted in your merchant profile |
+| `continue_add_card_success_url` | string | No | After linking their card, the user will see a success screen with a **Done** button. Your `continue_add_card_success_url` will be embedded in this button. When the user taps **Done**, they will be redirected to your platform |
+| `hash` | string | Yes | Base64-encoded HMAC-SHA512 hash of the concatenated values: `merchant_id`, `ctid`, and `return_param` with `public_key` |
 
 ## Hash Generation
 
@@ -41,15 +41,4 @@ $hash = base64_encode(hash_hmac('sha512', $b4hash, $api_key, true));
 
 ## Response
 
-**HTTP 200** — Returns HTML content with the card entry form rendered via PayWay Plugin JS.
-
-## Callback Response (POST to `return_url`)
-
-After the card is linked, PayWay sends:
-
-| Field | Description |
-|-------|-------------|
-| `pwt` | PayWay Token for the card |
-| `mask_pan` | Masked PAN (last 4 digits) |
-| `card_type` | `Visa`, `MC`, `JCB`, or `CUP` |
-| `ctid` | Consumer Token Identification |
+**HTTP 200** — Returns HTML content with the card entry form.
