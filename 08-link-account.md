@@ -27,11 +27,33 @@ Before using this API, please make sure your profile has enabled Account on File
 | `return_deeplink` | string | — | No | After the user links their account on ABA Mobile, they will see a success screen with a **Done** button. Your return deep link will be embedded in this button. When the user taps **Done**, they will be redirected to your app |
 | `hash` | string | — | Yes | Base64-encoded HMAC-SHA512 hash of the concatenated values: `merchant_id`, `req_time`, and `return_deeplink`, using the `public_key` |
 
+### `return_url` Encoding
+
+```php
+$return_url = base64_encode("YOUR RETURN URL VALUE");
+```
+
+### `return_deeplink` Format
+
+```php
+$deeplink_format = array(
+    "ios_scheme" => "{YOUR IOS DEEPLINK URL}",
+    "android_scheme" => "{YOUR ANDROID DEEPLINK URL}",
+);
+
+$return_deeplink = base64_encode(json_encode($deeplink_format));
+```
+
 ## Hash Generation
 
 ```php
+// public key provided by ABA Bank
 $api_key = "API KEY PROVIDED BY ABA BANK";
+
+// Prepare the data to be hashed
 $b4hash = $merchant_id . $req_time . $return_deeplink;
+
+// Generate the HMAC hash using SHA-512 and encode it in Base64
 $hash = base64_encode(hash_hmac('sha512', $b4hash, $api_key, true));
 ```
 
@@ -59,6 +81,37 @@ $hash = base64_encode(hash_hmac('sha512', $b4hash, $api_key, true));
 | `expire_in` | number | Date and time (timestamp) of the token expiry |
 | `status.code` | string | Response code |
 | `status.message` | string | Please see more details in the `code` property above |
+
+Success response:
+
+```json
+{
+    "status": {
+        "code": "00",
+        "message": "QR generated successfully"
+    },
+    "deeplink": "abamobilebank://ababank.com?type=account_on_file&qrcode=ABAAOFTmtAvigDc7VNoqZEW72QLdD4ZeA0rl8QcM3Shtj5w1I%3D",
+    "qr_string": "ABAAOFTmtAvigDc7VNoqZEW72QLdD4ZeA0rl8QcM3Shtj5w1I=",
+    "qr_image": "https://checkout-sandbox.payway.com.kh/merchants/abaqr/abaqr-63eb236a67e29...1772508119NMgtbughIp.png",
+    "expire_in": 1772594519
+}
+```
+
+Exception response:
+
+```json
+{
+    "status": {
+        "code": 4,
+        "message": "Request Parameter Required"
+    },
+    "description": {
+        "hash": [
+            "Invalid hash"
+        ]
+    }
+}
+```
 
 ## Status Codes
 
