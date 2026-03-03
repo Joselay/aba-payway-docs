@@ -1,6 +1,6 @@
 # Check Transaction API
 
-This API allow you to get the transaction status of a transaction, you can only check the transaction that created within 7 days only. To get a details of a transaction which is older than 7 days please use Get a transaction details API.
+This API allow you to get the transaction status of a transaction, you can only check the transaction that created within 7 days only. To get a details of a transaction which is older than 7 days please use [Get a transaction details](./03-get-transaction-details.md) API.
 
 ## Endpoint
 
