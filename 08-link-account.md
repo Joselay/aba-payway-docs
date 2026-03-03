@@ -1,6 +1,6 @@
 # Link Account API
 
-Links a customer's ABA Bank account for future payments. Generates a QR code for desktop or a deeplink for mobile that the customer uses to authorize the account linking via ABA Mobile.
+The API returns a QR code or an ABA Mobile deeplink, enabling users to either scan the QR code or use the deeplink to automatically launch the ABA Mobile app and prompts the customer to select an ABA account to link to your platform. Once the user finishes linking, PayWay will send pushback account details and token to the merchant through the `return_url`.
 
 ## Endpoint
 
@@ -14,18 +14,18 @@ POST /api/aof/request-qr
 
 ## Prerequisites
 
-Account on File must be enabled on your merchant profile. Contact `digitalsupport@ababank.com` (sandbox) or `paywaysales@ababank.com` (production).
+Before using this API, please make sure your profile has enabled Account on File feature. If your merchant profile has not enabled this feature yet, please contact our merchant digital support (`digitalsupport@ababank.com`) for sandbox profile, and for a production merchant profile, please contact our merchant acquisition team (`paywaysales@ababank.com`).
 
 ## Request Parameters
 
 | Field | Type | Max Length | Required | Description |
 |-------|------|-----------|----------|-------------|
-| `req_time` | string | — | Yes | Request timestamp in UTC format: `YYYYMMDDHHmmss` |
-| `merchant_id` | string | 20 | Yes | Unique merchant identifier |
-| `return_param` | string | — | Yes | Custom data included in gateway callback |
-| `return_url` | string | — | No | URL receiving linked account details; defaults to merchant profile's `pushback_url` |
-| `return_deeplink` | string | — | No | Base64-encoded JSON with `ios_scheme` and `android_scheme` for post-linking redirect |
-| `hash` | string | — | Yes | Base64-encoded HMAC-SHA512 hash |
+| `req_time` | string | — | Yes | Request date and time in UTC format as `YYYYMMDDHHmmss` |
+| `merchant_id` | string | 20 | Yes | A unique merchant key which provided by ABA Bank |
+| `return_param` | string | — | Yes | Extra information that you want to include when payment gateway calls your `return_url` |
+| `return_url` | string | — | No | Once the user has linked their account, the details of the token and other important information will be sent via this URL. This is an optional field. If left empty, it will default to the merchant profile's `pushback_url`. If you provide a value, ensure that your domain is whitelisted in your merchant profile |
+| `return_deeplink` | string | — | No | After the user links their account on ABA Mobile, they will see a success screen with a **Done** button. Your return deep link will be embedded in this button. When the user taps **Done**, they will be redirected to your app |
+| `hash` | string | — | Yes | Base64-encoded HMAC-SHA512 hash of the concatenated values: `merchant_id`, `req_time`, and `return_deeplink`, using the `public_key` |
 
 ## Hash Generation
 
@@ -35,35 +35,35 @@ $b4hash = $merchant_id . $req_time . $return_deeplink;
 $hash = base64_encode(hash_hmac('sha512', $b4hash, $api_key, true));
 ```
 
+### Request Example
+
+```json
+{
+  "req_time": "20210723080525",
+  "merchant_id": "ec000002",
+  "return_param": "REQ0012",
+  "return_url": "RBqpuvSB7BA...CX+X1Sxtg4U+==",
+  "hash": "waNDRBqpuvSBACX...3+cOwJQn/eHYw=="
+}
+```
+
 ## Response
 
 **HTTP 200**
 
 | Field | Type | Description |
 |-------|------|-------------|
-| `deeplink` | string | Mobile app deep link for Android/iOS |
-| `qr_string` | string | QR code data string for web browser integration |
-| `qr_image` | string | Complete URL to QR image file |
-| `expire_in` | number | Token expiration timestamp |
+| `deeplink` | string | If your integration is on a mobile app, either Android or iOS, you can open this deep link to redirect the user to ABA Mobile and complete the account linking process |
+| `qr_string` | string | If your integration is on a web browser, you can render this QR code so that users can scan and complete the linking process |
+| `qr_image` | string | Full URL of the QR image |
+| `expire_in` | number | Date and time (timestamp) of the token expiry |
 | `status.code` | string | Response code |
-| `status.message` | string | Status description |
-
-## Callback Response (POST to `return_url`)
-
-After the customer links their account, PayWay sends:
-
-| Field | Description |
-|-------|-------------|
-| `tran_id` | Transaction identifier |
-| `ctid` | Consumer Token Identification (unique per customer) |
-| `pwt` | PayWay Token (identifies the ABA account) |
-| `mask_account` | Masked account showing last 4 digits |
-| `expired_in` | Expiration timestamp |
+| `status.message` | string | Please see more details in the `code` property above |
 
 ## Status Codes
 
 | Code | Description |
 |------|-------------|
 | `00` | Success |
-| `04` | Missing required parameter |
-| `11` | Server error |
+| `04` | Request parameter required |
+| `11` | Server-side error |
