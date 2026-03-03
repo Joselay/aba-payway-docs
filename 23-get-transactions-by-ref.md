@@ -23,6 +23,17 @@ POST /api/payment-gateway/v1/payments/get-transactions-by-mc-ref
 | `merchant_ref` | string | 20 | Yes | Your merchant reference number |
 | `hash` | string | — | Yes | Base64-encoded HMAC-SHA512 hash of `req_time` + `merchant_id` + `merchant_ref` |
 
+## Example Request
+
+```json
+{
+  "req_time": "20250213084236",
+  "merchant_id": "ec000002",
+  "merchant_ref": "17394277693",
+  "hash": "QskVi2gEctW...j7Td6kEi/KLPvGcK3ZiA=="
+}
+```
+
 ## Hash Generation
 
 ```php
@@ -57,12 +68,20 @@ $hash = base64_encode(hash_hmac('sha512', $b4hash, $api_key, true));
 | `payment_type` | string | `ABA Pay` or `KHQR` |
 | `merchant_ref` | string | Your reference number |
 
+### `status` Object
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `code` | string | Response code |
+| `message` | string | Status description |
+| `merchant_ref` | string | Merchant reference number |
+
 ## Status Codes
 
 | Code | Description |
 |------|-------------|
-| `00` | Success |
+| `00` | Success! |
 | `1` | Wrong hash |
 | `8` | Invalid merchant profile |
-| `11` | Server error |
-| `429` | Rate limit exceeded |
+| `11` | Internal server error |
+| `429` | Rate limit exceeded. |

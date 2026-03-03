@@ -58,7 +58,7 @@ $hash = base64_encode(hash_hmac('sha512', $b4hash, $api_key, true));
 | Code | Description |
 |------|-------------|
 | `00` | Success |
-| `1` | Invalid hash |
-| `11` | Unexpected error |
-| `26` | Invalid merchant profile |
+| `1` | Invalid hash value |
+| `11` | An unexpected error occurred. Please try again later or contact ABA support for assistance. |
+| `26` | Merchant profile is invalid |
 | `29` | Invalid ctid or pwt |

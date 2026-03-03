@@ -38,9 +38,9 @@ POST /api/payment-gateway/v1/payments/generate-qr
 | `purchase_type` | string | 20 | No | `pre-auth` or `purchase` (default) |
 | `items` | string | 500 | No | Base64-encoded JSON item list (max 10 items) |
 | `callback_url` | string | 255 | No | Base64-encoded URL to receive payment callbacks |
-| `return_deeplink` | string | 255 | No | Base64-encoded deeplink with Android and iOS schemes |
+| `return_deeplink` | string | 255 | No | Base64-encoded JSON with `android_scheme` and `ios_scheme` keys |
 | `custom_fields` | string | 255 | No | Base64-encoded additional custom fields |
-| `return_params` | string | — | No | Additional info included in pushback on payment completion |
+| `return_params` | string | — | No | Additional information to include in the pushback once the payment is completed |
 | `payout` | string | 255 | No | Base64-encoded JSON payout instructions |
 
 > **Note:** Alipay & WeChat do not support pre-auth.
@@ -78,7 +78,7 @@ $hash = base64_encode(hash_hmac('sha512', $b4hash, $api_key, true));
 
 **return_deeplink** (Base64-encoded JSON):
 ```json
-{"android": "payway://pay", "ios": "payway://pay"}
+{"android_scheme": "payway://pay", "ios_scheme": "payway://pay"}
 ```
 
 **custom_fields** (Base64-encoded JSON):
@@ -88,7 +88,7 @@ $hash = base64_encode(hash_hmac('sha512', $b4hash, $api_key, true));
 
 **callback_url** (Base64-encoded): The URL that receives payment notifications.
 
-**return_params**: Additional info included in pushback on payment completion (plain string, not Base64-encoded).
+**return_params**: Additional information to include in the pushback once the payment is completed (JSON object).
 
 ## Request Example
 
@@ -160,23 +160,23 @@ $hash = base64_encode(hash_hmac('sha512', $b4hash, $api_key, true));
 
 | Code | Description |
 |------|-------------|
-| `0` | Success |
-| `1` | Wrong hash |
-| `6` | Requested domain is not in whitelist |
-| `8` | Something went wrong |
-| `12` | Payment currency is not allowed |
-| `16` | Invalid first name |
-| `17` | Invalid last name |
-| `18` | Invalid phone number |
-| `19` | Invalid email |
-| `21` | End of API lifetime |
-| `23` | Selected payment option not enabled |
-| `32` | Service is not enabled |
-| `35` | Payout info is invalid |
-| `44` | Purchase amount reached transaction limit |
-| `47` | KHR amount must be greater than 100 KHR |
-| `48` | Something went wrong with requested parameters |
+| `0` | Success. |
+| `1` | Wrong Hash. |
+| `6` | Requested Domain is not in whitelist. |
+| `8` | Something went wrong. Please reach out to our digital support team for assistance |
+| `12` | Payment currency is not allowed. |
+| `16` | Invalid First Name. It must not contain numbers or special characters or not more than 100 characters. |
+| `17` | Invalid Last Name. It must not contain numbers or special characters or not more than 100 characters. |
+| `18` | Invalid Phone Number. |
+| `19` | Invalid Email. |
+| `21` | End of API lifetime. |
+| `23` | Selected Payment Option is not enabled for this Merchant Profile. |
+| `32` | Service is not enable. |
+| `35` | Payout Info is invalid. |
+| `44` | Purchase amount has reached transaction limit. |
+| `47` | KHR Amount must be greater than 100 KHR. |
+| `48` | Something went wrong with requested parameters. Please try again or contact the merchant for help. |
 | `96` | Invalid merchant data |
-| `102` | The URL is not in the whitelist |
-| `403` | Duplicated transaction ID |
-| `429` | Maximum attempt limit reached |
+| `102` | The URL is not in the whitelist. |
+| `403` | Duplicated Transaction ID |
+| `429` | You've reached the maximum attempt limit. Please try again in (min) |

@@ -105,31 +105,31 @@ $hash = base64_encode(hash_hmac('sha512', $b4hash, $api_key, true));
 | Code | Description |
 |------|-------------|
 | `0` | Success |
-| `4` | Duplicated transaction ID |
-| `11` | Something went wrong |
-| `24` | Cannot decrypt data |
-| `25` | Maximum 10 beneficiaries per request |
-| `26` | Invalid merchant profile |
+| `4` | Duplicated Transaction ID |
+| `11` | Something went wrong. Try again or contact the merchant for help |
+| `24` | Can not decrypt data |
+| `25` | Allow maximum 10 beneficiaries per requests |
+| `26` | Invalid Merchant Profile |
 | `36` | Payout account or amount is invalid |
 | `37` | Payout accounts are not in whitelist |
 | `44` | Purchase amount has reached transaction limit |
-| `48` | Something went wrong with requested parameters |
-| `70` | Total purchase amount reached daily limit |
-| `79` | Payment rejected |
+| `48` | Something went wrong with requested parameters. Please try again or contact the merchant for help |
+| `70` | Total purchase amount has reached daily limit. Please use difference account |
+| `79` | Payment Rejected! |
 | `80` | Custom fields invalid |
-| `81` | Total amount must be greater than 0 |
-| `82` | Invalid transaction currency (only USD or KHR) |
-| `83` | Transaction is duplicated |
-| `84` | Unable to access merchant's account details |
-| `85` | Transaction currency doesn't match merchant's currency |
-| `86` | Unable to debit merchant's account |
-| `87` | Unable to retrieve beneficiary's account details |
-| `88` | Unable to retrieve beneficiary's MID details |
-| `89` | Unable to retrieve beneficiary's account details |
-| `90` | Merchant and beneficiary currencies don't align |
-| `91` | Unable to credit beneficiary's account |
-| `92` | Total payout amount doesn't match total transaction amount |
-| `93` | Insufficient balance |
+| `81` | The total amount must be greater than 0. Please double check and try again. |
+| `82` | Invalid transaction currency. We only support USD or KHR. Please double check and try again. |
+| `83` | Transaction is duplicated. |
+| `84` | Unable to access the merchant's account details. Please verify that your settlement account is still active. |
+| `85` | Transaction currency does not match the merchant's currency. Please review your details. |
+| `86` | Unable to debit the merchant's account. |
+| `87` | Unable to retrieve the beneficiary's account details. |
+| `88` | Unable to retrieve the beneficiary's MID details. |
+| `89` | Unable to retrieve the beneficiary's account details. |
+| `90` | The currencies for the merchant and beneficiary do not align. Please review your details. |
+| `91` | Unable to credit the beneficiary's account. |
+| `92` | The total payout amount does not match the total transaction amount. Please review your details. |
+| `93` | Insufficient balance. |
 | `400` | Bad request |
-| `LAM01` | Daily limit reached |
-| `LAM02` | Monthly limit reached |
+| `LAM01` | Total purchase amount has reached daily limit. Please use difference account |
+| `LAM02` | Total purchase amount has reached monthly limit. Please use difference account |

@@ -52,19 +52,19 @@ POST /api/merchant-portal/merchant-access/online-transaction/pre-auth-cancellati
 
 | Code | Description |
 |------|-------------|
-| `00` | Success |
-| `PTL02` | Invalid hash |
-| `PTL04` | Parameter validation failed |
-| `PTL06` | Request expired |
-| `PTL36` | Invalid transaction |
-| `PTL59` | Unable to cancel pre-auth |
-| `PTL60` | Pre-auth amount exceeds limit |
-| `PTL61` | Invalid action type |
-| `PTL62` | Invalid merchant information |
-| `PTL63` | Missing security configuration |
-| `PTL157` | Unexpected error |
-| `PTL168` | Concurrent requests not allowed |
-| `PTL169` | Settlement account closed |
-| `USD-NOT-ALLOW` | USD amount not permitted |
-| `KHR-LESS-100` | KHR must exceed 100 |
-| `KHR-CONTAIN-DECIMAL` | KHR cannot include decimals |
+| `00` | Success! |
+| `PTL02` | Invalid hash provided. Ensure you are using the correct hash key. |
+| `PTL04` | Parameter validation failed. Verify that all required fields are correctly formatted. |
+| `PTL06` | The request has expired. Please generate a new request and retry. |
+| `PTL36` | Invalid transaction. Ensure that the transaction ID is correct. |
+| `PTL59` | Unable to complete or cancel Pre-auth. Check the transaction status before retrying. |
+| `PTL60` | Pre-auth amount exceeds the allowed limit. Reduce the amount and try again. |
+| `PTL61` | Invalid action type. Ensure you are using a valid operation type. |
+| `PTL62` | Invalid merchant information. Verify your merchant ID and try again. |
+| `PTL63` | Merchant does not have a security configuration file. Contact support for assistance. |
+| `PTL157` | An unexpected error occurred. Please try again later or contact our digital support team. |
+| `PTL168` | Concurrent requests are not allowed. Wait a few seconds and retry. |
+| `PTL169` | The merchant profile cannot accept payments. Settlement account is closed. |
+| `USD-NOT-ALLOW` | The requested amount is not permitted. Choose a valid amount. |
+| `KHR-LESS-100` | KHR amount must be greater than 100 KHR. |
+| `KHR-CONTAIN-DECIMAL` | Amount for KHR currency must be a whole number (no decimals allowed). |

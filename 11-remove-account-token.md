@@ -22,6 +22,18 @@ POST /api/aof/remove-account
 | `pwt` | string | 250 | Yes | Payment gateway-generated token |
 | `hash` | string | — | Yes | Base64-encoded HMAC-SHA512 hash |
 
+## Example Request
+
+```json
+{
+  "req_time": "20250305114648",
+  "merchant_id": "ec000002",
+  "ctid": "522235C...C8FA2890C5378D7",
+  "pwt": "522235462D55FA...6AF3DA7B968DD7B7F57A",
+  "hash": "K1g6XnbVSyN1L/...RM1HrsmPDgfdUzT/6Ru9HV+H/yn1qLow=="
+}
+```
+
 ## Hash Generation
 
 ```php
@@ -50,4 +62,4 @@ $hash = base64_encode(hash_hmac('sha512', $b4hash, $api_key, true));
 | `00` | Success |
 | `04` | Missing required parameter |
 | `29` | Invalid ctid or pwt |
-| `500` | Server error |
+| `500` | Server-side error |

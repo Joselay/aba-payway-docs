@@ -4,69 +4,69 @@ KHQR is a standardized QR code payment system overseen by the National Bank of C
 
 ## Compliance Requirement
 
-Merchants implementing KHQR must make adjustments upon request by ABA or in compliance with the National Bank of Cambodia's requirements. Failure to comply may result in service suspension or termination.
+Merchants implementing KHQR are required to make adjustments or changes upon request by ABA or in compliance with the National Bank of Cambodia's requirements. Failure to comply may result in service suspension or termination.
+
+## Benefits
+
+### Customer Benefits
+
+- Single KHQR code eliminates multiple QR confusion at checkout
+- Look for the KHQR label when paying
+- Use preferred payment app including Bakong App at any KHQR location
+
+### Merchant Benefits
+
+- Save counter space with one KHQR stand
+- Simple, fast, secure solution
+- Accept payments from any bank app without bilateral contracts
 
 ## QR Code Specification
 
 ### Notation Convention
 
-| Abbreviation | Meaning |
-|-------------|---------|
-| ans | Alphanumeric Special |
+| Abbreviation | Description |
+|---|---|
+| ans | Alphanumeric Special (96 characters including numerics and punctuation) |
 | C | Conditional |
+| CDCVM | Consumer Device Cardholder Verification Method |
+| CRC | Cyclic Redundancy Check |
+| ECI | Extended Channel Interpretation |
+| ID | Identifier of the data object |
+| ISO | International Standards Organization |
 | M | Mandatory |
-| N | Numeric |
-| S | String |
+| N | Numeric (digits "0" to "9") |
+| QR Code | Quick Response Code |
+| RFU | Reserved for Future Use |
+| S | String (Unicode characters) |
+| Var. | Variable |
 
-### Root Level Data Objects
+### Data Objects Under Root QR Code
 
-| Data Element | ID | Format | Length | Required |
-|-------------|-----|--------|--------|----------|
-| Payload Format Indicator | 00 | N | 02 | M |
-| Point of Initiation Method | 01 | N | 02 | M |
-| Merchant Account Information | 30 | N | var. up to 99 | M |
-| Merchant Category Code | 52 | ans | var. up to 99 | M |
-| Transaction Currency | 53 | N | 03 | M |
-| Transaction Amount | 54 | ans | var. up to 13 | C |
-| Country Code | 58 | ans | 02 | M |
-| Merchant Name | 59 | ans | var. up to 25 | M |
-| Merchant City | 60 | ans | var. up to 15 | M |
-| Additional Data Field Template | 62 | S | var. up to 99 | M |
-| Additional Data Field | 99 | S | var. up to 99 | M |
-| CRC | 63 | ans | 04 | M |
+| Name | ID | Format | Length | Presence | Comment |
+|---|---|---|---|---|---|
+| Payload Format Indicator | 00 | N | 02 | M | 01 |
+| Point of Initial Method | 01 | N | 02 | M | 11=Static QR (no amount); 12=Dynamic QR (with amount) |
+| Merchant Account Information | 30 | N | var. up to 99 | M | Provided by ABA |
+| Merchant Category Code | 52 | ans | var. up to 99 | M | At least one Merchant Account Information present |
+| Transaction Currency | 53 | N | 03 | M | 116=KHR; 840=USD |
+| Transaction Amount | 54 | ans | var. up to 13 | C | No decimal places for KHR amounts |
+| Country Code | 58 | ans | 02 | M | — |
+| Merchant Name | 59 | ans | var. up to 25 | M | Display name when scanned; must match ABA registered profile |
+| Merchant City | 60 | ans | var. up to 15 | M | Valid values: Battambang, BMC (Banteay MeanChey), Kampong Cham, Kampong Chhnang, Kampong Speu, Kampong Thom, Kandal, Kep, Koh Kong, Kratie, Mondolkiri, Oddor Meanchey, Pailin, Pady Paet, Phnom Penh, Preah Vihear, Prey Veng, Pursat, Ratanakiri, Siem Reap, Sihanouk Ville, Steung Treng, Svay Rieng, Takeo, Tboung Khmum |
+| Additional Data Field Template | 62 | S | var. up to 99 | M | Information provided by merchant |
+| Additional Data Field | 99 | S | var. up to 99 | M | Additional info used by Bakong |
+| CRC | 63 | ans | 04 | M | Cyclic Redundancy Check |
 
-### Point of Initiation Method
+### Data Objects for Additional Data Field Template (ID "62")
 
-| Value | Type |
-|-------|------|
-| `11` | Static QR (without amount) |
-| `12` | Dynamic QR (with amount) |
-
-### Currency Codes
-
-| Code | Currency |
-|------|----------|
-| `116` | KHR (Cambodian Riel) |
-| `840` | USD (US Dollar) |
-
-### Merchant City Valid Values
-
-Battambang, BMC (Banteay MeanChey), Kampong Cham, Kampong Chhnang, Kampong Speu, Kampong Thom, Kandal, Kep, Koh Kong, Kratie, Mondolkiri, Oddor Meanchey, Pailin, Pady Paet, Phnom Penh, Preah Vihear, Prey Veng, Pursat, Ratanakiri, Siem Reap, Sihanouk Ville, Steung Treng, Svay Rieng, Takeo, Tboung Khmum.
-
-### Merchant Name
-
-The display name shown when a mobile banking app scans the QR. Must match the name on your ABA registered profile.
-
-### Additional Data Field Template Objects
-
-| Name | ID | Format | Length | Required |
-|------|-----|--------|--------|----------|
-| Merchant Reference Number | 01 | ans | var. up to 25 | M |
-| PayWay Data Field Template | 68 | S | var. up to 99 | M |
+| Name | ID | Format | Length | Presence | Comment |
+|---|---|---|---|---|---|
+| Merchant Reference Number | 01 | ans | var. up to 25 | M | — |
+| PayWay Data Field Template | 68 | S | var. up to 99 | M | Provided by ABA |
 
 ### Multi-Payment
 
-QR codes can be paid multiple times, allowing single QR codes to process repeated transactions.
+QR can be paid multiple times.
 
 ## QR Code Example
 
@@ -77,30 +77,30 @@ QR codes can be paid multiple times, allowing single QR codes to process repeate
 ### Example Breakdown
 
 | ID | Sub Tag | Length | Value | Description |
-|----|---------|--------|-------|-------------|
+|---|---|---|---|---|
 | 00 | — | 02 | 01 | Version 1 |
-| 01 | — | 02 | 12 | Dynamic QR |
-| 30 | — | 51 | — | Merchant information |
+| 01 | — | 02 | 12 | Dynamic QR indicator |
+| 30 | — | 51 | — | Merchant info |
 | — | 00 | 16 | abaakhppxxx@abaa | Acquiring Bakong ID |
-| — | 01 | 15 | 125021214532846 | Merchant ID from ABA Bank |
-| — | 02 | 08 | ABA Bank | Acquiring bank name |
+| — | 01 | 15 | 125021214532846 | MID provided by ABA Bank |
+| — | 02 | 08 | ABA Bank | Acquiring Bank name |
 | 52 | — | 04 | 5987 | Merchant Category Code |
-| 53 | — | 03 | 116 | KHR currency |
-| 54 | — | 03 | 100 | Transaction amount |
-| 58 | — | 02 | KH | Country code |
-| 59 | — | 25 | OLD ME 25 CHAR WINNER IP2 | Merchant name |
-| 60 | — | 10 | PHNOM PENH | Merchant city |
+| 53 | — | 03 | 116 | KHR transaction currency |
+| 54 | — | 03 | 100 | Transaction Amount |
+| 58 | — | 02 | KH | Country Code |
+| 59 | — | 25 | OLD ME 25 CHAR WINNER IP2 | Merchant Name |
+| 60 | — | 10 | PHNOM PENH | Merchant City |
 | 62 | — | 57 | — | Additional data |
-| — | 01 | 15 | MC-REF-KH-15000 | Merchant reference number |
-| — | 68 | 34 | 0010PAYWAY@ABA0208104514230604A227 | PayWay data |
-| 99 | — | 34 | — | Bakong-specific data |
+| — | 01 | 15 | MC-REF-KH-15000 | Merchant reference # |
+| — | 68 | 34 | 0010PAYWAY@ABA0208104514230604A227 | Provided by ABA Bank |
+| 99 | — | 34 | — | Additional data for Bakong |
 | — | 00 | 13 | 1759805345337 | Creation timestamp |
 | — | 01 | 13 | 1759805345337 | Expiry timestamp |
-| 63 | — | 04 | 9FBD | CRC checksum |
+| 63 | — | 04 | 9FBD | CRC |
 
 ## Webhook Payment Notifications
 
-Merchants must supply webhook URLs to PayWay for receiving payment success notifications.
+Merchants must provide webhook URL to PayWay for payment notifications.
 
 ### Requirements
 
@@ -131,18 +131,18 @@ Merchants must supply webhook URLs to PayWay for receiving payment success notif
 ### Webhook Fields
 
 | Field | Description |
-|-------|-------------|
-| `transaction_id` | Unique identifier from PayWay |
-| `merchant_ref` | Data from QR subtag 62.01 |
-| `transaction_date` | Transaction date and time |
-| `bank_ref` | Core banking booking entry reference |
-| `payment_status_code` | `0` = successful payment |
-| `payment_status` | Status description (e.g., `APPROVED`) |
-| `apv` | 6-digit approval code |
-| `original_amount` | Amount received by merchant |
-| `original_currency` | Merchant's currency |
-| `payment_amount` | Amount paid by customer |
-| `payment_currency` | Payer's currency (`KHR` or `USD`) |
+|---|---|
+| `transaction_id` | Unique transaction ID generated by PayWay |
+| `merchant_ref` | Information from QR subtag 62.01 |
+| `transaction_date` | Date and time of transaction |
+| `bank_ref` | Core banking booking entry |
+| `payment_status_code` | `0` represents successful payment |
+| `payment_status` | Status description in word format |
+| `apv` | Approval code (6 digits) |
+| `original_amount` | Amount merchant received |
+| `original_currency` | Merchant currency |
+| `payment_amount` | Payer payment amount |
+| `payment_currency` | Payer currency (`KHR` or `USD`) |
 | `payment_type` | `ABA PAY` or `KHQR` |
-| `payer_account` | Masked payer account number |
-| `bank_name` | Issuing bank name |
+| `payer_account` | Masked account number of payer |
+| `bank_name` | Issuer bank name |

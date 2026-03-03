@@ -28,6 +28,21 @@ POST /api/merchant-portal/merchant-access/whitelist-account/add-whitelist-payout
 | `mc_id` | string | Yes | Same as `merchant_id` |
 | `payee` | string | Yes | Beneficiary identifier: MID or ABA account number |
 
+### RSA Encryption
+
+The `merchant_auth` JSON object must be encrypted using the RSA public key provided by ABA Bank. Data is encrypted in 117-byte chunks, then concatenated and Base64-encoded.
+
+## Example Request
+
+```json
+{
+  "request_time": "20200728093403",
+  "merchant_id": "ec000002",
+  "merchant_auth": "39aaa43...c00a",
+  "hash": "EVDFA21....t+sWw=="
+}
+```
+
 ## Hash Generation
 
 ```php
@@ -51,18 +66,36 @@ $hash = base64_encode(hash_hmac('sha512', $b4hash, $api_key, true));
 | `status` | integer | — | `1` = Active, `0` = Inactive |
 | `created_at` | string | — | Date and time added to whitelist |
 
+### Example Response
+
+```json
+{
+  "data": {
+    "name": "Sample Outlet",
+    "payee": "318111358120004",
+    "currency": "USD",
+    "type": "Merchant",
+    "status": 1,
+    "created_at": "2020-07-28T09:34:03Z"
+  },
+  "status": {
+    "code": "200",
+    "message": "Success"
+  }
+}
+```
+
 ## Status Codes
 
 | Code | Description |
 |------|-------------|
-| `00` | Success |
 | `PTL02` | Wrong hash |
 | `PTL04` | Parameter validation required |
 | `PTL25` | Invalid account class |
-| `PTL99` | Invalid merchant currency |
+| `PTL99` | Merchant invalid currency |
 | `PTL134` | Account not found |
 | `PTL146` | Payee is invalid |
-| `PTL147` | Payee currency doesn't match merchant currency |
-| `PTL148` | Payee already exists |
-| `PTL150` | Business profile not found |
+| `PTL147` | Currency of the payee does not the same as merchant currency |
+| `PTL148` | Payee already exist |
+| `PTL150` | Business profile is not found |
 | `PTL151` | Failed to whitelist account |

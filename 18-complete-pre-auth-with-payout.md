@@ -49,4 +49,22 @@ POST /api/merchant-portal/merchant-access/online-transaction/pre-auth-completion
 
 ## Status Codes
 
-Same as [Complete Pre-Auth](./17-complete-pre-auth.md#status-codes).
+| Code | Description |
+|------|-------------|
+| `00` | Transaction successful. |
+| `PTL02` | Invalid hash value. |
+| `PTL04` | Parameter validation failed. |
+| `PTL06` | The request has expired. |
+| `PTL36` | Invalid transaction. |
+| `PTL59` | Unable to complete or cancel the pre-authorization. |
+| `PTL60` | Pre-authorization completion amount exceeds the authorized limit. |
+| `PTL61` | Invalid action type. |
+| `PTL62` | Merchant information is invalid. |
+| `PTL63` | The merchant does not have a security configuration file. |
+| `PTL153` | Completing pre-authorization fees for a merchant with multiple settlement accounts is not allowed. |
+| `PTL157` | An unexpected error occurred. Please try again later or contact our digital support team. |
+| `PTL168` | Concurrent requests are not allowed for this operation. Please try again in a few seconds. |
+| `PTL169` | The merchant profile cannot accept payments because the settlement account is closed. |
+| `USD-NOT-ALLOW` | The requested amount is not allowed for USD transactions. |
+| `KHR-LESS-100` | The transaction amount in KHR must be at least 100 KHR. |
+| `KHR-CONTAIN-DECIMAL` | KHR transaction amounts cannot contain decimal places. |

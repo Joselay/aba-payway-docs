@@ -21,6 +21,17 @@ POST /api/aof/pushback-status
 | `return_param` | string | 255 | Yes | Unique transaction request identifier |
 | `hash` | string | — | Yes | Base64-encoded HMAC-SHA512 hash |
 
+## Example Request
+
+```json
+{
+  "req_time": "20230816044238",
+  "merchant_id": "ec000002",
+  "return_param": "43242423443",
+  "hash": "0aolk6L/lO5RzW...g9thfavA54Q=="
+}
+```
+
 ## Hash Generation
 
 ```php
