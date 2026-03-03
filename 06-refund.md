@@ -84,6 +84,32 @@ $hash = base64_encode(hash_hmac('sha512', $b4hash, $api_key, true));
 
 **HTTP 200**
 
+Success response:
+
+```json
+{
+    "grand_total": 1.5,
+    "total_refunded": 0.09,
+    "currency": "USD",
+    "transaction_status": "REFUNDED",
+    "status": {
+        "code": "00",
+        "message": "Success!"
+    }
+}
+```
+
+Exception response:
+
+```json
+{
+    "status": {
+        "code": "PTL02",
+        "message": "Wrong Hash"
+    }
+}
+```
+
 | Field | Type | Description |
 |-------|------|-------------|
 | `grand_total` | number | Example: A customer pays 20USD by card. A 2USD discount is applied, so the final amount is 18USD |
@@ -96,8 +122,8 @@ $hash = base64_encode(hash_hmac('sha512', $b4hash, $api_key, true));
 
 | Code | Description |
 |------|-------------|
-| `00` | Success |
-| `PTL02` | Invalid hash |
+| `00` | Success! |
+| `PTL02` | Wrong Hash |
 | `PTL04` | Parameter validation required |
 | `PTL05` | Parameter invalid format |
 | `PTL06` | The `request_time` value is missing or incorrectly formatted |

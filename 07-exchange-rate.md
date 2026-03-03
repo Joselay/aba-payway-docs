@@ -1,6 +1,6 @@
 # Exchange Rate API
 
-Fetches the latest exchange rates from ABA Bank. Rates match those on [ABA Bank Forex Exchange](https://www.ababank.com/en/forex-exchange).
+With the Exchange rate API you can fetch the latest exchange rate from ABA bank, the exchange rates are exactly like the prices you will find on https://www.ababank.com/en/forex-exchange
 
 ## Endpoint
 
@@ -17,8 +17,8 @@ POST /api/payment-gateway/v1/exchange-rate
 | Field | Type | Required | Description |
 |-------|------|----------|-------------|
 | `req_time` | string | Yes | Request date and time in UTC format as `YYYYMMDDHHmmss` |
-| `merchant_id` | string | Yes | Unique merchant key provided by ABA Bank |
-| `hash` | string | Yes | Base64-encoded HMAC-SHA512 hash |
+| `merchant_id` | string | Yes | A unique merchant key which provided by ABA Bank |
+| `hash` | string | Yes | Base64 encode of hash hmac sha512 encryption of concatenates values `req_time`, and `merchant_id` with `public_key` |
 
 ## Hash Generation
 
@@ -26,6 +26,16 @@ POST /api/payment-gateway/v1/exchange-rate
 $api_key = "API KEY PROVIDED BY ABA BANK";
 $b4hash = $req_time . $merchant_id;
 $hash = base64_encode(hash_hmac('sha512', $b4hash, $api_key, true));
+```
+
+### Request Example
+
+```json
+{
+  "req_time": "20250212104216",
+  "merchant_id": "ec000002",
+  "hash": "2P+5NrSb5g2XyITaxttsnjW...JVKguqghoQrq4y4C3tbUiA=="
+}
 ```
 
 ## Response
@@ -53,19 +63,40 @@ Each currency object contains `sell` and `buy` rates as strings.
 | `jpy` | Japanese Yen |
 | `vnd` | Vietnamese Dong |
 
-### Example Response Structure
+Success response:
 
 ```json
 {
-  "status": {
-    "code": "00",
-    "message": "Success"
-  },
-  "exchange_rates": {
-    "aud": { "sell": "...", "buy": "..." },
-    "sgd": { "sell": "...", "buy": "..." },
-    "eur": { "sell": "...", "buy": "..." }
-  }
+    "status": {
+        "code": "00",
+        "message": "Success!"
+    },
+    "exchange_rates": {
+        "aud": { "sell": "2719.38", "buy": "2540.49" },
+        "sgd": { "sell": "3113.18", "buy": "2914.72" },
+        "eur": { "sell": "4461.07", "buy": "4258.34" },
+        "gbp": { "sell": "5333.51", "buy": "5064.89" },
+        "myr": { "sell": "943.65", "buy": "839.94" },
+        "thb": { "sell": "122.14", "buy": "118.18" },
+        "hkd": { "sell": "531.57", "buy": "473.15" },
+        "cny": { "sell": "577.35", "buy": "521.23" },
+        "cad": { "sell": "2956.91", "buy": "2666.82" },
+        "krw": { "sell": "3.0151", "buy": "2.6634" },
+        "jpy": { "sell": "27.1139", "buy": "25.0701" },
+        "vnd": { "sell": "0.1631", "buy": "0.1509" }
+    }
+}
+```
+
+Exception response:
+
+```json
+{
+    "status": {
+        "code": "26",
+        "message": "Invalid merchant profile",
+        "tran_id": "1729573626"
+    }
 }
 ```
 
@@ -73,6 +104,6 @@ Each currency object contains `sell` and `buy` rates as strings.
 
 | Code | Description |
 |------|-------------|
-| `00` | Success |
+| `00` | Success! |
 | `1` | Wrong hash |
 | `26` | Invalid merchant profile |
