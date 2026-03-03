@@ -1,8 +1,10 @@
 # Get Transaction Details API
 
-Retrieves details of a purchase transaction, including its history, for both online and in-store payments.
+This API allows you to retrieve details of a purchase transaction, including its history and related operations, for both online and in-store payments.
 
 > **Note:** This API does not support real-time payment status checks during payment processing.
+
+You can retrieve details for any past transaction.
 
 ## Endpoint
 
@@ -14,7 +16,7 @@ POST /api/payment-gateway/v1/payments/transaction-detail
 
 **Content-Type**: `application/json`
 
-**Rate Limit**: 10 requests per minute (cannot be increased)
+**Rate Limit**: Limited to 10 requests per minute. This limit cannot be increased.
 
 ## Request Parameters
 
@@ -116,7 +118,7 @@ $hash = base64_encode(hash_hmac('sha512', $b4hash, $api_key, true));
 
 | Code | Description |
 |------|-------------|
-| `00` | Success |
+| `00` | Success! |
 | `5` | Wrong hash |
 | `6` | Transaction not found |
 | `8` | Invalid merchant profile |
