@@ -53,7 +53,7 @@ $hash = base64_encode(hash_hmac('sha512', $b4hash, $api_key, true));
 
 **HTTP 200**
 
-Success response:
+Success response (APPROVED transaction):
 
 ```json
 {
@@ -73,6 +73,30 @@ Success response:
         "code": "00",
         "message": "Success!",
         "tran_id": "17394277693"
+    }
+}
+```
+
+Success response (PENDING transaction — `payment_currency` is `""` because no payment has been made yet):
+
+```json
+{
+    "data": {
+        "payment_status_code": 2,
+        "total_amount": 1,
+        "original_amount": 1,
+        "refund_amount": 0,
+        "discount_amount": 0,
+        "payment_amount": 0,
+        "payment_currency": "",
+        "apv": "",
+        "payment_status": "PENDING",
+        "transaction_date": "2026-03-03 14:22:31"
+    },
+    "status": {
+        "code": "00",
+        "message": "Success!",
+        "tran_id": "probe-1772522551392"
     }
 }
 ```
@@ -100,7 +124,7 @@ Exception response:
 | `refund_amount` | number | Total of all refunded amount |
 | `discount_amount` | number | Discounted amount and its currency follow the original transaction currency |
 | `payment_amount` | number | The amount that customer has paid |
-| `payment_currency` | string | The payment currency that the customer has paid |
+| `payment_currency` | string | The payment currency that the customer has paid. Empty string `""` when the transaction is still `PENDING` (no payment has been made yet) |
 | `apv` | string | Transaction approval code |
 | `transaction_date` | string | Date and time of the transaction created in payment gateway |
 

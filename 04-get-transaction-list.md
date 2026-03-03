@@ -137,7 +137,7 @@ Exception response:
 | `discount_amount` | number | Discounted amount. Its currency follow original currency |
 | `refund_amount` | number | Total refunded amount |
 | `payment_amount` | number | The amount that the customer has paid. Example: Customer supposed to pay 1$, but customer paid from his KHR account then this payment amount will be 4,000.00 |
-| `payment_currency` | string | Payment currency. Example: Customer supposed to pay 1$, but customer paid from his KHR account then this payment currency will be KHR |
+| `payment_currency` | string | Payment currency. Empty string `""` when the transaction is `PENDING` (no payment made yet). Once paid, reflects the actual currency used — e.g. if the customer was billed in USD but paid from a KHR account, this will be `KHR` |
 | `first_name` | string | Payer first name. This value only exist in the API response if configure on profile |
 | `last_name` | string | Payer last name. This value only exist in the API response if configure on profile |
 | `email` | string | Payer email. This value only exist in the API response if configure on profile |
