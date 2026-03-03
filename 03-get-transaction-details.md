@@ -1,6 +1,8 @@
 # Get Transaction Details API
 
-Retrieves details of a purchase transaction, including its history, for both online and in-store payments. This API does not support real-time payment status checks during processing — use [Check Transaction](./02-check-transaction.md) for that.
+Retrieves details of a purchase transaction, including its history, for both online and in-store payments.
+
+> **Note:** This API does not support real-time payment status checks during payment processing.
 
 ## Endpoint
 
