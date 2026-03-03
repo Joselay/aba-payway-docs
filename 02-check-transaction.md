@@ -46,6 +46,8 @@ $hash = base64_encode(hash_hmac('sha512', $b4hash, $api_key, true));
 
 **HTTP 200**
 
+Success response:
+
 ```json
 {
     "data": {
@@ -64,6 +66,18 @@ $hash = base64_encode(hash_hmac('sha512', $b4hash, $api_key, true));
         "code": "00",
         "message": "Success!",
         "tran_id": "17394277693"
+    }
+}
+```
+
+Exception response:
+
+```json
+{
+    "status": {
+        "code": 6,
+        "message": "tran_id not found",
+        "tran_id": "1729573626"
     }
 }
 ```
