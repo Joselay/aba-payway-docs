@@ -95,9 +95,11 @@ $hash = base64_encode(hash_hmac('sha512', $b4hash, $api_key, true));
 
 | Code | Description |
 |------|-------------|
-| `00` | Success! |
-| `5` | Invalid hash |
+| `"00"` | Success! |
+| `5` | wrong hash |
 | `6` | tran_id not found |
-| `8` | Invalid merchant profile |
+| `8` | merchant_id not found |
 | `11` | Internal server error |
 | `429` | Reach request limit |
+
+> **Note:** Success code `"00"` is returned as a string. Error codes (`5`, `6`, `8`, `11`, `429`) are returned as numbers.
