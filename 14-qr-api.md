@@ -21,7 +21,7 @@ POST /api/payment-gateway/v1/payments/generate-qr
 | `req_time` | string | — | Yes | Request date and time in UTC format as `YYYYMMDDHHmmss` |
 | `merchant_id` | string | 30 | Yes | A unique merchant key which provided by ABA Bank |
 | `tran_id` | string | 20 | Yes | This is the unique transaction ID that identifies the transaction |
-| `amount` | number | — | Yes | The total transaction amount must be at least **100 KHR** or **0.01 USD** |
+| `amount` | string | — | Yes | The total transaction amount as a formatted decimal string (e.g. `"1.00"` for USD, `"4000"` for KHR). Must match the value used in hash computation. Minimum: **100 KHR** or **0.01 USD** |
 | `currency` | string | 3 | Yes | Supported transaction currencies: `KHR` and `USD`. Not case-sensitive |
 | `payment_option` | string | 20 | Yes | Supported payment options: `abapay_khqr` (Payway will response ABA KHQR), `wechat` (PayWay will respond with a WeChat QR, only for USD transactions), `alipay` (PayWay will respond with an Alipay QR, only for USD transactions) |
 | `lifetime` | integer | — | Yes | Transaction lifetime in minutes. Default: 30 days. Minimum: 3 mins. Maximum: 30 days |
