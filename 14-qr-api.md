@@ -114,7 +114,7 @@ $payout = base64_encode('[
   "last_name": "Bank",
   "email": "aba.bank@gmail.com",
   "phone": "012345678",
-  "amount": 0.01,
+  "amount": "0.01",
   "purchase_type": "purchase",
   "payment_option": "abapay_khqr",
   "items": "W3sibmFtZSI6IicgVU5JT04gU0VMRUNUIG51bGwsIHZlcnNpb24oKSwgbnVsbCAtLSIsInF1YW50aXR5IjozLCJwcmljZSI6MTAwLjAxfV0=",
